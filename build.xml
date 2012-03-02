@@ -1,0 +1,64 @@
+<?xml version="1.0" ?>
+<project name="Myfox" basedir="." default="unittest" description="Myfox">
+	<tstamp>
+		<format property="FULLDATE" pattern="%Y%m/%d" />
+		<format property="FULLDATE1" pattern="%Y_%m_%d" />
+		<format property="FULLTIME" pattern="%H%M%S" />
+		<format property="FULLTIME1" pattern="%H_%M_%S" />
+	</tstamp>
+
+	<property name="prop.file" value="_private.${host.name}-${host.arch}-${host.domain}.properties" />
+	<echo message="properties file: ${prop.file}" />
+
+	<available file="${prop.file}" property="test_prop_file_exists"	value="Yes" />
+
+	<if>
+		<equals arg1="${test_prop_file_exists}" arg2="1" />
+		<then />
+		<else>
+			<property name="properties.reset" value="true" />
+			<phing phingfile="build/phing/init.xml" inheritRefs="true" inheritAll="true" target="-init" haltonfailure="true" />
+		</else>
+	</if>
+
+	<property file="./${prop.file}" />
+
+	<target name="unittest" description="Run unit test.">
+		<phing phingfile="build/phing/makeconf.xml" inheritRefs="true" inheritAll="true" target="-unittest" haltonfailure="true" />
+		<phing phingfile="build/phing/unittest.xml" inheritRefs="true" inheritAll="true" target="-unittest" haltonfailure="true" />
+	</target>
+
+	<target name="config" description="Config properties file.">
+		<if>
+			<equals arg1="${test_prop_file_exists}" arg2="1" />
+			<then>
+				<property name="properties.reset" value="false" />
+				<phing phingfile="build/phing/init.xml" inheritRefs="true" inheritAll="true" target="-init" haltonfailure="true" />
+			</then>
+		</if>
+	</target>
+
+	<target name="reset" description="Initating phing environment.">
+		<if>
+			<equals arg1="${test_prop_file_exists}" arg2="1" />
+			<then>
+				<property name="properties.reset" value="true" />
+				<phing phingfile="build/phing/init.xml" inheritRefs="true" inheritAll="true" target="-init" haltonfailure="true" />
+			</then>
+		</if>
+	</target>
+
+	<target name="cleanup" description="clean all files which should not be commit">
+		<phing phingfile="build/phing/unittest.xml" inheritRefs="true" inheritAll="true" target="-cleanup" haltonfailure="true" />
+		<phing phingfile="build/phing/makeconf.xml" inheritRefs="true" inheritAll="true" target="-cleanup" haltonfailure="true" />
+	</target>
+
+	<target name="makeconf" description="Run unit test.">
+		<phingcall target="cleanup" />
+		<phing phingfile="build/phing/makeconf.xml" inheritRefs="true" inheritAll="true" target="-makeconf" haltonfailure="true" />
+	</target>
+
+	<target name="release" description="Make rpm file for code release.">
+		<phing phingfile="build/phing/release.xml" inheritRefs="true" inheritAll="true" target="-release" haltonfailure="true" />
+	</target>
+</project>

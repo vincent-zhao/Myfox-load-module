@@ -1,0 +1,83 @@
+<project name="release" basedir="." default="-release" description="Make rpm file for code release">
+	<target name="-release" description="Make rpm file for code release">
+
+		<input propertyname="release.svn.tag" defaultValue="trunk" promptChar=":">SVN tag name</input>
+
+		<phingcall target="-confirm" />
+		<phingcall target="-cleanup" />
+		<phingcall target="-checkout" />
+
+		<svnlastrevision propertyName="svn.revision" workingcopy="build/src" />
+
+		<phingcall target="-config" >
+			<property name="rpm.config.mode" value="release" />
+		</phingcall>
+
+		<delete dir="build/src" verbose="false" quiet="true" includeemptydirs="true" />
+
+		<echo message="" />
+		<echo message="" />
+		<echo message="****************************************************************" />
+		<echo message="*" />
+		<echo message="*    All Done" />
+		<echo message="*" />
+		<echo message="****************************************************************" />
+		<echo message="" />
+		<echo message="" />
+
+	</target>
+	<target name="-confirm" description="Confirm for rpming&#39;s begin">
+		<echo message="" />
+		<echo message="" />
+		<echo message="****************************************************************" />
+		<echo message="*" />
+		<echo message="*    SVN checkout url: ${code.svn.url}" />
+		<echo message="*" />
+		<echo message="****************************************************************" />
+		<echo message="" />
+		<echo message="" />
+		<input propertyname="release.confirm" promptChar="?">All settings is correctly (y/n)</input>
+		<if>
+			<equals arg1="${release.confirm}" arg2="y" />
+			<then>
+			</then>
+			<else>
+				<fail message="Release is canceled!" />
+			</else>
+		</if>
+	</target>
+
+	<target name="-cleanup" description="Cleanup all old files.">
+		<delete dir="build/src" verbose="false" quiet="true" includeemptydirs="true" />
+		<delete dir="build/rpm" verbose="false" quiet="true" includeemptydirs="true" />
+	</target>
+
+	<target name="-checkout" description="Checkout all codes from subversion">
+		<svncheckout svnpath="/usr/bin/svn" nocache="true" repositoryurl="${code.svn.url}" todir="build/src"/>
+	</target>
+
+	<target name="-config" description="Make release package">
+		<property file="${rpm.config.mode}.properties" override="true" />
+		<property name="rpm.tmp.dir" value="build/rpm/${rpm.config.mode}" />
+		<mkdir dir="${rpm.tmp.dir}" />
+		<phing dir="build/src" phingfile="build/phing/makeconf.xml" inheritRefs="true" inheritAll="true" target="-dev" haltonfailure="true" />
+		<phing dir="build/src" phingfile="build/phing/makeconf.xml" inheritRefs="true" inheritAll="true" target="-bash" haltonfailure="true" />
+
+		<copy todir="${rpm.tmp.dir}" overwrite="true" includeemptydirs="true">
+			<fileset dir="build/src/">
+				<include name="app/**/*" />
+				<include name="bin/**/*" />
+				<include name="etc/**/*" />
+				<include name="lib/**/*" />
+				<include name="www/**/*" />
+				<exclude name="resource/**/*" />
+				<exclude name="**/.svn/**" />
+			</fileset>
+		</copy>
+
+		<exec dir="${rpm.tmp.dir}" command="tar -cvzf ../myfox.${rpm.config.mode}.tar.gz *" />
+		<delete dir="build/rpm/release" verbose="false" quiet="true" includeemptydirs="true" />
+	</target>
+
+</project>
+

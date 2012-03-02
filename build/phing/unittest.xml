@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<project name="unittest" basedir="." default="-unittest" description="Targets for unittest">
+	<target name="-cleanup" description="Delete all old reports for unit test.">
+		<delete dir="build/unit_test" verbose="false" quiet="true"
+			includeemptydirs="true" />
+		<delete dir="build/code_coverage" verbose="false" quiet="true"
+			includeemptydirs="true" />
+	</target>
+
+	<target name="-unittest" description="Run all unit test.">
+
+		<phingcall target="-cleanup" />
+
+		<mkdir dir="build/unit_test" />
+		<mkdir dir="build/code_coverage" />
+
+		<coverage-setup database="build/code_coverage/coverage.db">
+			<fileset dir="./">
+				<exclude name="lib/blackhole.php" />
+				<exclude name="lib/exception.php" />
+				<exclude name="app/worker.php" />
+				<include name="lib/**/*.php" />
+				<include name="app/**/*.php" />
+			</fileset>
+		</coverage-setup>
+
+		<phpunit printsummary="false" failureproperty="failure.unittest"
+			errorproperty="error.unittest" codecoverage="true">
+			<batchtest>
+				<fileset dir="test/">
+					<include name="**/*Test.php" />
+				</fileset>
+			</batchtest>
+			<formatter type="xml" todir="build/unit_test" outfile="test.unit.report.xml" />
+		</phpunit>
+
+		<phpunitreport infile="build/unit_test/test.unit.report.xml"
+			format="noframes" todir="build/unit_test" />
+
+		<coverage-report outfile="build/code_coverage/coverage.xml">
+			<report todir="build/code_coverage" />
+		</coverage-report>
+
+		<if>
+			<equals arg1="${failure.unittest}" arg2="1" />
+			<then>
+				<fail message="Failed for unit test [FAILURE]!" />
+			</then>
+		</if>
+		<if>
+			<equals arg1="${error.unittest}" arg2="1" />
+			<then>
+				<fail message="Failed for unit test [ERROR]!" />
+			</then>
+		</if>
+	</target>
+</project>

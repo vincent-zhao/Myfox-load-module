@@ -1,0 +1,76 @@
+<project name="init" basedir="." default="-init" description="Initating phing environment">
+
+	<exec dir="" command="svn info | grep URL | cut -d&quot; &quot; -f2" outputProperty="code.svn.url" />
+
+	<target name="-cleanup">
+		<delete file="${prop.file}" verbose="false" quiet="true" />
+	</target>
+
+	<target name="-init">
+		<php expression="realpath(&quot;${env.PWD}&quot;)" returnProperty="dir.root" />
+		<property name="run.mode" value="dev" />
+		<property name="run.user" value="${env.USER}" />
+		<property name="run.home" value="${env.HOME}" />
+
+		<!--MySQL-->
+		<property name="default.mysql.logurl" value="log://notice.warn.error/${env.HOME}/mysql.dev.log" />
+		<property name="default.mysql.dbname" value="meta_myfox_config" />
+		<property name="default.mysql.prefix" value="dev_" />
+		<property name="default.mysql.master" value="it_is_private" />
+		<property name="default.mysql.slave" value="it_is_private" />
+
+		<property name="myfox.download.path" value="${env.HOME}/var/myfox/download" />
+		<property name="myfox.filesplit.path" value="${env.HOME}/var/myfox/filesplit" />
+
+		<!-- bash -->
+		<property name="myfox.rpc.agent" value="Myfox RPC Caller (0.8.1)" />
+		<property name="myfox.rpc.server" value="127.0.0.1:9999/${env.USER}/myfox2" />
+		<property name="net.filename.prefix" value="" />
+
+		<!-- alert -->
+		<property name="alert.normal.command" value="may_be_mail_command" />
+		<property name="alert.urgence.command" value="may_be_send_a_sms" />
+
+		<available file="_private.properties" property="private.properties.exists" value="1" />
+		<if>
+			<equals arg1="${private.properties.exists}" arg2="1" />
+			<then>
+				<property file="_private.properties" override="true" />
+			</then>
+		</if>
+
+		<phingcall target="-copyfile" />
+
+	</target>
+
+	<target name="-copyfile">
+		<copy file="build/tpl/default.properties" tofile="./${prop.file}" overwrite="true">
+			<filterchain>
+				<replacetokens begintoken="##" endtoken="##">
+					<token key="dir.root" value="${dir.root}" />
+					<token key="run.mode" value="${run.mode}" />
+
+					<token key="code.svn.url" value="${code.svn.url}" />
+
+					<!--MySQL-->
+					<token key="default.mysql.logurl" value="${default.mysql.logurl}" />
+					<token key="default.mysql.dbname" value="${default.mysql.dbname}" />
+					<token key="default.mysql.prefix" value="${default.mysql.prefix}" />
+
+					<token key="default.mysql.master" value="${default.mysql.master}" />
+					<token key="default.mysql.slave" value="${default.mysql.slave}" />
+
+					<token key="myfox.download.path" value="${myfox.download.path}" />
+					<token key="myfox.filesplit.path" value="${myfox.filesplit.path}" />
+
+					<token key="myfox.rpc.server" value="${myfox.rpc.server}" />
+					<token key="myfox.rpc.agent" value="${myfox.rpc.agent}" />
+					<token key="net.filename.prefix" value="${net.filename.prefix}" />
+
+					<token key="alert.normal.command" value="${alert.normal.command}" />
+					<token key="alert.urgence.command" value="${alert.urgence.command}" />
+				</replacetokens>
+			</filterchain>
+		</copy>
+	</target>
+</project>
