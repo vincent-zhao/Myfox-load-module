@@ -21,22 +21,22 @@
 * Myfox用一个常驻进程来处理外部提交的数据装载任务，或者其他任务。这个进程您可以通过下列命
   令来启动：
 
-> nohup /usr/bin/php bin/run.php processor &
+        nohup /usr/bin/php bin/run.php processor &
 
 # 代码结构 #
 
-> .
-> |-- READEME								自述文件
-> |-- app									Myfox自身类代码
-> |-- bin									后台运行脚本的启动命令
-> |-- build									build文件，采用phing进行代码build
-> |-- build.xml
-> |-- etc									配置文件
-> |-- lib									Myfox无关的PHP Class代码
-> |-- release.properties					release模式的properties文件
-> |-- resource								部署在Hadoop系统上的shell脚本模版
-> |-- test									测试代码
-> `-- www									htdocs目录, index.php作为统一入口程序
+         .
+         |-- READEME			自述文件
+         |-- app				Myfox自身类代码
+         |-- bin				后台运行脚本的启动命令
+         |-- build				build文件，采用phing进行代码build
+         |-- build.xml
+         |-- etc				配置文件
+         |-- lib				Myfox无关的PHP Class代码
+         |-- release.properties	release模式的properties文件
+         |-- resource			部署在Hadoop系统上的shell脚本模版
+         |-- test				测试代码
+         `-- www				htdocs目录, index.php作为统一入口程序
 
 # 环境依赖 #
 
@@ -54,25 +54,23 @@
 
 * 我们假设：
 
-> 元数据和路由库MySQL部署在172.0.0.1 (master) 和 172.0.0.2 (slave)上;
-> 有两个数据节点（MySQL），分别是192.168.1.1 和 192.168.1.2;
-> 所有MySQL通过3306端口对外服务，写账号为db_write，读账号为db_read，密码均为123456;
+    * 元数据和路由库MySQL部署在172.0.0.1 (master) 和 172.0.0.2 (slave)上;
+    * 有两个数据节点（MySQL），分别是192.168.1.1 和 192.168.1.2;
+    * 所有MySQL通过3306端口对外服务，写账号为db_write，读账号为db_read，密码均为123456;
 
 * mysql -h172.0.0.1 -P3306 -udb_write -p123456 < database.sql
 
 * 配置修改：
 
-整个项目在开发过程中采用phing来进行build，开发、单元测试以及release所用到的不同配置都用
-phing来管理。因此，对于配置文件的管理，我仍然建议你采用phing进行.
-
-> etc/myfox.ini 是主配置文件，其中 url.prefix 需要根据你的nginx配置而指定;
-
-> etc/mysql.ini 是元数据和路由库的配置文件，这一数据库实例在代码中以default命名.
+	* 整个项目在开发过程中采用phing来进行build，开发、单元测试以及release所用到的不同配置都用
+phing来管理。因此，对于配置文件的管理，我仍然建议你采用phing进行;
+    * etc/myfox.ini 是主配置文件，其中 url.prefix 需要根据你的nginx配置而指定;
+    * etc/mysql.ini 是元数据和路由库的配置文件，这一数据库实例在代码中以default命名.
 
 * 测试数据装入：
 
-> sh bin/gateway_call_myfox_import.sh -tmirror -rthedate=20110610,cid=1 test/unit/resource/numsplit_import_data_file.txt
-> sh bin/gateway_call_myfox_import.sh -tmirror test/unit/resource/mirror_import_data_file.txt 1
+        sh bin/gateway_call_myfox_import.sh -tmirror -rthedate=20110610,cid=1 test/unit/resource/numsplit_import_data_file.txt
+        sh bin/gateway_call_myfox_import.sh -tmirror test/unit/resource/mirror_import_data_file.txt 1
 
 # TODO #
 
