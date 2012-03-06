@@ -10,7 +10,7 @@
   未来应该也不会支持这样的需求。
 
 * 您看到的这个源码包只是 Myfox 中负责路由计算和数据装载的部分，提供在线透明查询的SQL代理
-  部分我们用Node.js做了重新实现，您可以在另外一个源码包里找到.
+  部分我们用Node.js做了重新实现，您可以在[另外一个源码包](https://github.com/vincent-zhao/Myfox-query-module)里找到.
 
 # 设计思想 #
 
@@ -26,17 +26,17 @@
 # 代码结构 #
 
          .
-         |-- READEME			自述文件
-         |-- app				Myfox自身类代码
-         |-- bin				后台运行脚本的启动命令
-         |-- build				build文件，采用phing进行代码build
+         |-- READEME				自述文件
+         |-- app					Myfox自身类代码
+         |-- bin					后台运行脚本的启动命令
+         |-- build					build文件，采用phing进行代码build
          |-- build.xml
-         |-- etc				配置文件
-         |-- lib				Myfox无关的PHP Class代码
-         |-- release.properties	release模式的properties文件
-         |-- resource			部署在Hadoop系统上的shell脚本模版
-         |-- test				测试代码
-         `-- www				htdocs目录, index.php作为统一入口程序
+         |-- etc					配置文件
+         |-- lib					Myfox无关的PHP Class代码
+         |-- release.properties		release模式的properties文件
+         |-- resource				部署在Hadoop系统上的shell脚本模版
+         |-- test					测试代码
+         `-- www					htdocs目录, index.php作为统一入口程序
 
 # 环境依赖 #
 
