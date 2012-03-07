@@ -56,6 +56,13 @@
 	<target name="makeconf" description="Run unit test.">
 		<phingcall target="cleanup" />
 		<phing phingfile="build/phing/makeconf.xml" inheritRefs="true" inheritAll="true" target="-makeconf" haltonfailure="true" />
+		<available file="build/phing/_makeconf.xml" property="private_makeconf_file_exists" value="Yes" />
+		<if>
+			<equals arg1="${private_makeconf_file_exists}" arg2="1" />
+			<then>
+				<phing phingfile="build/phing/_makeconf.xml" inheritRefs="true" inheritAll="true" target="-makeconf" haltonfailure="true" />
+			</then>
+		</if>
 	</target>
 
 	<target name="release" description="Make rpm file for code release.">

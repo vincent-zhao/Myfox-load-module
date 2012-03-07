@@ -19,6 +19,12 @@
 		<property name="default.mysql.master" value="it_is_private" />
 		<property name="default.mysql.slave" value="it_is_private" />
 
+		<property name="current.mysql.logurl" value="log://notice.warn.error/${env.HOME}/mysql.dev.log" />
+		<property name="current.mysql.dbname" value="meta_myfox_cluster" />
+		<property name="current.mysql.prefix" value="" />
+		<property name="current.mysql.master" value="it_is_private" />
+		<property name="current.mysql.slave" value="it_is_private" />
+
 		<property name="myfox.download.path" value="${env.HOME}/var/myfox/download" />
 		<property name="myfox.filesplit.path" value="${env.HOME}/var/myfox/filesplit" />
 
@@ -56,9 +62,14 @@
 					<token key="default.mysql.logurl" value="${default.mysql.logurl}" />
 					<token key="default.mysql.dbname" value="${default.mysql.dbname}" />
 					<token key="default.mysql.prefix" value="${default.mysql.prefix}" />
-
 					<token key="default.mysql.master" value="${default.mysql.master}" />
 					<token key="default.mysql.slave" value="${default.mysql.slave}" />
+
+					<token key="current.mysql.logurl" value="${current.mysql.logurl}" />
+					<token key="current.mysql.dbname" value="${current.mysql.dbname}" />
+					<token key="current.mysql.prefix" value="${current.mysql.prefix}" />
+					<token key="current.mysql.master" value="${current.mysql.master}" />
+					<token key="current.mysql.slave" value="${current.mysql.slave}" />
 
 					<token key="myfox.download.path" value="${myfox.download.path}" />
 					<token key="myfox.filesplit.path" value="${myfox.filesplit.path}" />
