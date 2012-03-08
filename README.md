@@ -1,5 +1,5 @@
 
-[![Build Status](https://secure.travis-ci.org/aleafs/tranvis-test.png?branch=master)](http://travis-ci.org/aleafs/tranvis-test)
+[![Build Status](https://secure.travis-ci.org/aleafs/Myfox-load-module.png?branch=master)](http://travis-ci.org/aleafs/Myfox-load-module)
 
 # 简介 #
 

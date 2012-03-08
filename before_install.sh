@@ -8,12 +8,15 @@ wget http://pecl.php.net/get/APC-3.1.9.tgz && \
 	./configure && make && make install && \
 	echo "extension=\"apc.so\"" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 
+wget http://pecl.php.net/get/igbinary-1.1.1.tgz && \
+	tar zxvf igbinary-1.1.1.tgz && cd igbinary-1.1.1 && \
+	phpize && ./configure CFLAGS="-O2 -g" --enable-igbinary && \
+	make && make install && \
+	echo "extension=\"igbinary.so\"" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
+
 pyrus install http://phptal.org/latest.tar.gz
 phpenv rehash
 
-pyrus install pear/PHP_CodeSniffer
-phpenv rehash
-
-pyrus install pear/phing
-phpenv rehash
-
+pear channel-discover pear.phing.info
+pear remote-list -c phing
+pear install phing/phing
