@@ -1,0 +1,9 @@
+language: php
+php:
+    - 5.3
+
+before_script:
+    - "mysql -uroot < database_4_test.sql"
+    - "/bin/bash ./before_install.sh"
+
+script: cp -f ./build/phing.php ./phing/bin/ && ./phing/bin/phing

@@ -16,8 +16,8 @@
 		<property name="default.mysql.logurl" value="log://notice.warn.error/${env.HOME}/mysql.dev.log" />
 		<property name="default.mysql.dbname" value="meta_myfox_config" />
 		<property name="default.mysql.prefix" value="dev_" />
-		<property name="default.mysql.master" value="it_is_private" />
-		<property name="default.mysql.slave" value="it_is_private" />
+		<property name="default.mysql.master" value="mysql://root:@0.0.0.0" />
+		<property name="default.mysql.slave" value="" />
 
 		<property name="current.mysql.logurl" value="log://notice.warn.error/${env.HOME}/mysql.dev.log" />
 		<property name="current.mysql.dbname" value="meta_myfox_cluster" />
@@ -34,8 +34,8 @@
 		<property name="net.filename.prefix" value="" />
 
 		<!-- alert -->
-		<property name="alert.normal.command" value="may_be_mail_command" />
-		<property name="alert.urgence.command" value="may_be_send_a_sms" />
+		<property name="alert.normal.command" value="touch ./alert.log" />
+		<property name="alert.urgence.command" value="touch ./alert.urgence" />
 
 		<available file="_private.properties" property="private.properties.exists" value="1" />
 		<if>
