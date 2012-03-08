@@ -17,5 +17,6 @@ wget http://pecl.php.net/get/igbinary-1.1.1.tgz && \
 	echo "extension=\"igbinary.so\"" >> `php --ini | grep "Loaded Configuration" | sed -e "s|.*:\s*||"`
 
 # install phing
-wget http://www.phing.info/get/phing-2.4.9.tgz && \
-	tar zxvf phing-2.4.9.tgz
+mkdir phing && cd phing && \
+	wget http://www.phing.info/get/phing-2.4.9.tgz && \
+	tar zxvf phing-2.4.9.tgz && cd - 

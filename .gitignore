@@ -2,6 +2,7 @@ _private.*
 bin/*.sh
 build/code_coverage/
 build/unit_test/
+phing/
 etc/*.ini
 test/unit/ini/*.ini
 test/unit/tmp/

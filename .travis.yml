@@ -6,4 +6,4 @@ before_script:
     - "mysql -uroot < database_4_test.sql"
     - "/bin/bash ./before_install.sh"
 
-script: ./bin/phing
+script: .phing/bin/phing
