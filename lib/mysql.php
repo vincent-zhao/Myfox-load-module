@@ -515,7 +515,9 @@ class Mysql
                 continue;
             }
             $this->$method(
-                $cf['host'], rawurldecode($cf['user']), rawurldecode($cf['pass']),
+                $cf['host'],
+                empty($cf['user']) ? 'root' : rawurldecode($cf['user']),
+                empty($cf['pass']) ? '' : rawurldecode($cf['pass']),
                 empty($cf['port']) ? 3306 : $cf['port']
             );
         }
