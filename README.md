@@ -1,3 +1,6 @@
+
+[![Build Status](https://secure.travis-ci.org/aleafs/tranvis-test.png?branch=master)](http://travis-ci.org/aleafs/tranvis-test)
+
 # 简介 #
 
 * Myfox是淘宝数据产品部开发的一套应用在OLAP系统上的分布式MySQL集群代理服务. 原始的海量
