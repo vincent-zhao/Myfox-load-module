@@ -21,6 +21,7 @@ cd ${__pwd} && wget http://pecl.php.net/get/igbinary-1.1.1.tgz && \
 # install phing
 cd ${__pwd} && mkdir phing && cd phing && \
 	wget http://www.phing.info/get/phing-2.4.9.tgz && \
-	tar zxvf phing-2.4.9.tgz 
+	tar zxvf phing-2.4.9.tgz  && \
+	cp -f build/phing.php phing/bin/
 
 cd ${__pwd} && ls -l
