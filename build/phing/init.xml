@@ -19,12 +19,6 @@
 		<property name="default.mysql.master" value="mysql://root:@0.0.0.0" />
 		<property name="default.mysql.slave" value="" />
 
-		<property name="current.mysql.logurl" value="log://notice.warn.error/${env.HOME}/mysql.dev.log" />
-		<property name="current.mysql.dbname" value="meta_myfox_cluster" />
-		<property name="current.mysql.prefix" value="" />
-		<property name="current.mysql.master" value="it_is_private" />
-		<property name="current.mysql.slave" value="it_is_private" />
-
 		<property name="myfox.download.path" value="${env.HOME}/var/myfox/download" />
 		<property name="myfox.filesplit.path" value="${env.HOME}/var/myfox/filesplit" />
 
@@ -36,14 +30,6 @@
 		<!-- alert -->
 		<property name="alert.normal.command" value="touch ./alert.log" />
 		<property name="alert.urgence.command" value="touch ./alert.urgence" />
-
-		<available file="_private.properties" property="private.properties.exists" value="1" />
-		<if>
-			<equals arg1="${private.properties.exists}" arg2="1" />
-			<then>
-				<property file="_private.properties" override="true" />
-			</then>
-		</if>
 
 		<phingcall target="-copyfile" />
 
@@ -64,12 +50,6 @@
 					<token key="default.mysql.prefix" value="${default.mysql.prefix}" />
 					<token key="default.mysql.master" value="${default.mysql.master}" />
 					<token key="default.mysql.slave" value="${default.mysql.slave}" />
-
-					<token key="current.mysql.logurl" value="${current.mysql.logurl}" />
-					<token key="current.mysql.dbname" value="${current.mysql.dbname}" />
-					<token key="current.mysql.prefix" value="${current.mysql.prefix}" />
-					<token key="current.mysql.master" value="${current.mysql.master}" />
-					<token key="current.mysql.slave" value="${current.mysql.slave}" />
 
 					<token key="myfox.download.path" value="${myfox.download.path}" />
 					<token key="myfox.filesplit.path" value="${myfox.filesplit.path}" />
