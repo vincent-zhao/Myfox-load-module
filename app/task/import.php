@@ -204,6 +204,7 @@ class Import extends \Myfox\App\Task
         $this->pools[$host]['handle']   = $mysql->async(strtr($import, array(
             '{FILE}'    => $fname,
             '{TABLE}'   => $this->option('bucket'),
+            '{FS}'      => chr(1),
         )));
     }
     /* }}} */
