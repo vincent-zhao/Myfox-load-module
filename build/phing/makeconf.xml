@@ -144,7 +144,7 @@
 				<replacetokens begintoken="##" endtoken="##">
 					<token key="run.mode" value="${run.mode}" />
 					<token key="alert.normal.command" value="i_am_wrong_command" />
-					<token key="alert.urgence.command" value="${alert.urgence.command}" />
+					<token key="alert.urgence.command" value="" />
 				</replacetokens>
 			</filterchain>
 		</copy>
