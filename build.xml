@@ -66,6 +66,15 @@
 	</target>
 
 	<target name="release" description="Make rpm file for code release.">
-		<phing phingfile="build/phing/release.xml" inheritRefs="true" inheritAll="true" target="-release" haltonfailure="true" />
+		<available file="build/phing/release.xml" property="phing_release_file_exists" value="Yes" />
+		<if>
+			<equals arg1="${phing_release_file_exists}" arg2="1" />
+			<then>
+				<phing phingfile="build/phing/release.xml" inheritRefs="true" inheritAll="true" target="-release" haltonfailure="true" />
+			</then>
+			<else>
+				<echo message="undefined release script" />
+			</else>
+		</if>
 	</target>
 </project>
