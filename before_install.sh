@@ -20,3 +20,5 @@ wget http://pecl.php.net/get/igbinary-1.1.1.tgz && \
 mkdir phing && cd phing && \
 	wget http://www.phing.info/get/phing-2.4.9.tgz && \
 	tar zxvf phing-2.4.9.tgz && cd - 
+
+ls -l
