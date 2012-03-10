@@ -216,4 +216,17 @@ class RouterTest extends \Myfox\Lib\TestShell
     }
     /* }}} */
 
+    /* {{{ public void test_should_the_secret_hello_function_works_fine() */
+    public function test_should_the_secret_hello_function_works_fine()
+    {
+        $hello  = Router::instance('mirror')->hello(null, $table);
+        $this->assertContains('route_info_5', $table);
+        $this->assertEquals(array(
+            'route_sign'    => 1556209608,
+            'table_name'    => 'mirror',
+            'route_text'    => '',
+        ), $hello);
+    }
+    /* }}} */
+
 }

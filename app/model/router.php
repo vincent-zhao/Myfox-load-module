@@ -303,14 +303,34 @@ class Router
      */
     public function where($field = null)
     {
+        $where  = $this->hello($field, $table);
+        return array(
+            'table' => $table,
+            'where' => sprintf(
+                "route_sign=%u AND table_name='%s' AND route_text='%s'", $where['route_sign'],
+                self::$mysql->escape($where['table_name']),
+                self::$mysql->escape($where['route_text'])
+            )
+        );
+    }
+    /* }}} */
+
+    /* {{{ public Mixture hello() */
+    /**
+     * 及其神秘的函数
+     *
+     * @access public
+     * @return Mixture
+     */
+    public function hello($field = null, &$table)
+    {
         $route  = $this->filter((array)$field);
         $sign   = $this->sign($route);
+        $table  = self::table($sign);
         return array(
-            'table' => self::table($sign),
-            'where' => sprintf(
-                "route_sign=%u AND table_name='%s' AND route_text='%s'",
-                $sign, self::$mysql->escape($this->tbname), self::$mysql->escape($route)
-            )
+            'route_sign'    => $sign,
+            'table_name'    => $this->tbname,
+            'route_text'    => $route,
         );
     }
     /* }}} */
