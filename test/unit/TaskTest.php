@@ -115,7 +115,7 @@ class TaskTest extends \Myfox\Lib\TestShell
         ));
         $this->assertEquals(Task::WAIT, $task->execute());
         $this->assertEquals(Task::SUCC, $task->wait());
-        $this->assertEquals('edp1_9801,edp2_9902', $task->result());
+        $this->assertEquals('edp2_9902,edp2_8510,edp1_9801', $task->result());
         $this->assertEquals(false,  self::check_table_exists('edp1_9801', 'mirror_0.task_test'));
         $this->assertEquals(false,  self::check_table_exists('edp2_9902', 'mirror_0.task_test'));
 
@@ -141,11 +141,11 @@ class TaskTest extends \Myfox\Lib\TestShell
     /* {{{ public void test_should_import_numsplit_works_fine() */
     public function test_should_import_numsplit_works_fine()
     {
-        $task	= new \Myfox\App\Task\Import(-1, array('table' => 'numsplit'));
+        $task	= new \Myfox\App\Task\Import(-1, array('table' => 'numsplit_v2'));
         $this->assertEquals(Task::IGNO, $task->execute());
 
         self::cleanTable('default', 'route_info');
-        \Myfox\App\Model\Router::set('numsplit', array(
+        \Myfox\App\Model\Router::set('numsplit_v2', array(
             array(
                 'field' => array(
                     'thedate'   => '2011-06-10',
@@ -163,7 +163,7 @@ class TaskTest extends \Myfox\Lib\TestShell
         ));
 
         $task   = new \Myfox\App\Task\Import(10, array(
-            'table'     => 'numsplit',
+            'table'     => 'numsplit_v2',
             'route'     => 'cid=1,thedate=20110610',
             'file'      => realpath(__DIR__ . '/resource/numsplit_import_data_file.txt'),
             'bucket'    => 'numsplit_0.t_2_0',
@@ -179,12 +179,12 @@ class TaskTest extends \Myfox\Lib\TestShell
     public function test_should_import_mirror_works_fine()
     {
         self::cleanTable('default', 'route_info');
-        $route  = \Myfox\App\Model\Router::set('mirror', array());
+        $route  = \Myfox\App\Model\Router::set('mirror_v2', array());
         $route  = reset($route);
         $route  = reset($route);
 
         $task   = new \Myfox\App\Task\Import(10, array(
-            'table'     => 'mirror',
+            'table'     => 'mirror_v2',
             'route'     => '',
             'file'      => realpath(__DIR__ . '/resource/mirror_import_data_file.txt'),
             'bucket'    => $route['table'],
@@ -193,15 +193,15 @@ class TaskTest extends \Myfox\Lib\TestShell
         $this->assertEquals(Task::WAIT, $task->execute());
         $this->assertEquals(Task::SUCC, $task->wait());
 
-        $where  = \Myfox\App\Model\Router::instance('mirror')->where(null);
+        $where  = \Myfox\App\Model\Router::instance('mirror_v2')->where(null);
         $route  = self::$mysql->getOne(self::$mysql->query(sprintf(
-            "SELECT hosts_list FROM %s WHERE table_name='mirror' AND real_table='%s' AND route_flag = %d",
+            "SELECT hosts_list FROM %s WHERE table_name='mirror_v2' AND real_table='%s' AND route_flag = %d",
             $where['table'], $route['table'], \Myfox\App\Model\Router::FLAG_IMPORT_END
         )));
 
         $route  = array_filter(explode(',', trim($route, '{}$')));
         sort($route);
-        $this->assertEquals(array(1,3,4), $route);
+        $this->assertEquals(array(1,2,3), $route);
     }
     /* }}} */
 
@@ -263,7 +263,7 @@ class TaskTest extends \Myfox\Lib\TestShell
         $this->assertContains('Undefined table named as "i_am_not_exists"', $task->lastError());
 
         $task	= new \Myfox\App\Task\Rsplit(-1, array(
-            'table' => 'numsplit',
+            'table' => 'numsplit_v2',
             'route' => 'thedate:2011-01-01,cid:23',
             'lines' => 1201,
             'file'  => __FILE__,

@@ -37,7 +37,7 @@ class ServerTest extends \Myfox\Lib\TestShell
 		}
 
 		$this->assertEquals('edp1_9801', Server::instance('edp1_9801')->option('host_name'));
-		$this->assertEquals(Server::TYPE_VIRTUAL, Server::instance('edp1_9901')->option('host_type'));
+		$this->assertEquals(Server::TYPE_REALITY, Server::instance('edp1_9801')->option('host_type'));
 	}
 	/* }}} */
 

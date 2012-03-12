@@ -1,6 +1,6 @@
 
-DROP DATABASE IF EXISTS meta_myfox_config;
-CREATE DATABASE meta_myfox_config;
+--DROP DATABASE IF EXISTS meta_myfox_config;
+--CREATE DATABASE meta_myfox_config;
 
 USE meta_myfox_config;
 
@@ -65,8 +65,8 @@ CREATE TABLE dev_table_list (
 	UNIQUE KEY uk_table_name (table_name)
 ) ENGINE = InnoDB DEFAULT CHARSET=UTF8;
 
-INSERT INTO dev_table_list VALUES (1,NOW(),NOW(),2,5,1000,'0.20',1,0,'mirror','测试镜像表','','','');
-INSERT INTO dev_table_list VALUES (2,NOW(),NOW(),2,5,1000,'0.20',0,1,'numsplit','测试切分表','thedate,cid','','');
+INSERT INTO dev_table_list VALUES (1,NOW(),NOW(),2,5,1000,'0.20',1,0,'mirror_v2','测试镜像表','','','');
+INSERT INTO dev_table_list VALUES (2,NOW(),NOW(),2,5,1000,'0.20',0,1,'numsplit_v2','测试切分表','thedate,cid','','');
 
 -- 路由字段表
 DROP TABLE IF EXISTS dev_table_route;
@@ -83,8 +83,8 @@ CREATE TABLE dev_table_route (
 	UNIQUE KEY uk_table_column (table_name, column_name)
 ) ENGINE = InnoDB DEFAULT CHARSET=UTF8;
 
-INSERT INTO dev_table_route VALUES (1,NOW(),NOW(),'numsplit','thedate','','date',1);
-INSERT INTO dev_table_route VALUES (2,NOW(),NOW(),'numsplit','cid','','int',1);
+INSERT INTO dev_table_route VALUES (1,NOW(),NOW(),'numsplit_v2','thedate','','date',1);
+INSERT INTO dev_table_route VALUES (2,NOW(),NOW(),'numsplit_v2','cid','','int',1);
 
 -- 表字段配置表
 DROP TABLE IF EXISTS dev_table_column;
@@ -103,15 +103,15 @@ CREATE TABLE dev_table_column (
 	UNIQUE KEY uk_column_name (table_name,column_name),
 	KEY idx_column_order (table_name(10), column_order)
 ) ENGINE = MyISAM DEFAULT CHARSET=UTF8;
-INSERT INTO dev_table_column VALUES (1,1,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'mirror','cid','uint','10','0','类目ID');
-INSERT INTO dev_table_column VALUES (2,2,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'mirror','cname','char','255','','类目名字');
-INSERT INTO dev_table_column VALUES (3,100,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'mirror','autokid','autokid','10','0','自增键');
-INSERT INTO dev_table_column VALUES (4,5,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'numsplit','char1','char','32','','');
-INSERT INTO dev_table_column VALUES (5,2,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'numsplit','cid','uint','10','0','');
-INSERT INTO dev_table_column VALUES (6,3,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'numsplit','num1','uint','10','0','');
-INSERT INTO dev_table_column VALUES (7,4,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'numsplit','num2','float','20,14','0.00','');
-INSERT INTO dev_table_column VALUES (8,1,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'numsplit','thedate','date','','0000-00-00','');
-INSERT INTO dev_table_column VALUES (9,100,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'numsplit','autokid','autokid','10','0','');
+INSERT INTO dev_table_column VALUES (1,1,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'mirror_v2','cid','uint','10','0','类目ID');
+INSERT INTO dev_table_column VALUES (2,2,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'mirror_v2','cname','char','255','','类目名字');
+INSERT INTO dev_table_column VALUES (3,100,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'mirror_v2','autokid','autokid','10','0','自增键');
+INSERT INTO dev_table_column VALUES (4,5,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'numsplit_v2','char1','char','32','','');
+INSERT INTO dev_table_column VALUES (5,2,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'numsplit_v2','cid','uint','10','0','');
+INSERT INTO dev_table_column VALUES (6,3,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'numsplit_v2','num1','uint','10','0','');
+INSERT INTO dev_table_column VALUES (7,4,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'numsplit_v2','num2','float','20,14','0.00','');
+INSERT INTO dev_table_column VALUES (8,1,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'numsplit_v2','thedate','date','','0000-00-00','');
+INSERT INTO dev_table_column VALUES (9,100,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),'numsplit_v2','autokid','autokid','10','0','');
 
 DROP TABLE IF EXISTS dev_table_index;
 CREATE TABLE dev_table_index (
@@ -126,7 +126,7 @@ CREATE TABLE dev_table_index (
 	UNIQUE KEY uk_table_index (table_name, index_name)
 ) ENGINE = MyISAM DEFAULT CHARSET=UTF8;
 
-INSERT INTO dev_table_index VALUES (1,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),0,'numsplit','idx_cid','cid');
+INSERT INTO dev_table_index VALUES (1,UNIX_TIMESTAMP(),UNIX_TIMESTAMP(),0,'numsplit_v2','idx_cid','cid');
 
 -- 任务队列
 DROP TABLE IF EXISTS dev_task_queque;
@@ -151,7 +151,10 @@ CREATE TABLE IF NOT EXISTS dev_task_queque (
 ) ENGINE = MyISAM DEFAULT CHARSET=UTF8;
 
 -- 路由表
-DROP TABLE IF EXISTS dev_route_info_0;
+DROP TABLE IF EXISTS dev_route_info_0,dev_route_info_1,dev_route_info_2,dev_route_info_3;
+DROP TABLE IF EXISTS dev_route_info_4,dev_route_info_5,dev_route_info_6,dev_route_info_7;
+DROP TABLE IF EXISTS dev_route_info_8,dev_route_info_9,dev_route_info_a,dev_route_info_b;
+DROP TABLE IF EXISTS dev_route_info_c,dev_route_info_d,dev_route_info_e,dev_route_info_f;
 CREATE TABLE dev_route_info_0 (
 	autokid int(10) unsigned not null auto_increment,
 	addtime int(10) unsigned not null default 0,

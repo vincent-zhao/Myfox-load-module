@@ -204,8 +204,8 @@ abstract class Task
         self::$hosts    = array();
         $query  = 'SELECT host_id,host_name,host_type,host_pos';
         $query  = sprintf(
-            '%s FROM %shost_list WHERE host_stat <> %d AND host_type <> %d',
-            $query, self::$mysql->option('prefix'), Server::STAT_ISDOWN, Server::TYPE_VIRTUAL
+            '%s FROM %shost_list WHERE host_stat <> %d',
+            $query, self::$mysql->option('prefix'), Server::STAT_ISDOWN
         );
 
         foreach ((array)self::$mysql->getAll(self::$mysql->query($query)) AS $row) {

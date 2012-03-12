@@ -47,10 +47,6 @@ class Delete extends \Myfox\App\Task
 
             $ignore[$id]    = true;
             $server = self::$hosts[$id];
-            if (Server::TYPE_VIRTUAL == $server['type']) {
-                continue;
-            }
-
             $db = Server::instance($server['name'])->getlink();
             $this->dbpools[]    = array($db, $db->async($query), $server['name']);
         }

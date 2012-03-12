@@ -13,7 +13,6 @@ class Server
 
     /* {{{ 静态常量 */
 
-    const TYPE_VIRTUAL  = 0;
     const TYPE_REALITY  = 1;
     const TYPE_ARCHIVE  = 2;
 

@@ -33,7 +33,7 @@ class TableTest extends \Myfox\Lib\TestShell
     /* {{{ public void test_should_get_table_option_works_fine() */
     public function test_should_get_table_option_works_fine()
     {
-        $table  = Table::instance('numsplit');
+        $table  = Table::instance('numsplit_v2');
         $this->assertEquals(0, $table->queries);
 
         $this->assertEquals(1000, $table->get('split_threshold'));
@@ -58,9 +58,9 @@ class TableTest extends \Myfox\Lib\TestShell
     /* {{{ public void test_should_table_column_works_fine() */
     public function _test_should_table_column_works_fine()
     {
-        Table::instance('numsplit')->queries    = 0;
+        Table::instance('numsplit_v2')->queries    = 0;
         $column = array();
-        foreach ((array)Table::instance('numsplit')->column() AS $key => $opt) {
+        foreach ((array)Table::instance('numsplit_v2')->column() AS $key => $opt) {
             $column[$key]   = array(
                 'type'      => $opt['coltype'],
                 'default'   => $opt['dfltval'],
@@ -104,10 +104,10 @@ class TableTest extends \Myfox\Lib\TestShell
         foreach ($expect AS $key => $opt) {
             $this->assertEquals($opt, $column[$key]);
         }
-        $this->assertEquals(1, Table::instance('numsplit')->queries);
+        $this->assertEquals(1, Table::instance('numsplit_v2')->queries);
 
-        Table::instance('numsplit')->column();
-        $this->assertEquals(1, Table::instance('numsplit')->queries);
+        Table::instance('numsplit_v2')->column();
+        $this->assertEquals(1, Table::instance('numsplit_v2')->queries);
     }
     /* }}} */
 
@@ -115,7 +115,7 @@ class TableTest extends \Myfox\Lib\TestShell
     public function test_should_table_index_works_fine()
     {
         $index  = array();
-        foreach ((array)Table::instance('numsplit')->index() AS $key => $opt) {
+        foreach ((array)Table::instance('numsplit_v2')->index() AS $key => $opt) {
             $index[$key]    = array(
                 'type'  => $opt['create_type'],
                 'char'  => $opt['index_text'],
@@ -123,7 +123,7 @@ class TableTest extends \Myfox\Lib\TestShell
         }
 
         $this->assertEquals(array(
-            'idx_split_cid' => array(
+            'idx_cid' => array(
                 'type'  => 0,
                 'char'  => 'cid',
             ),
@@ -138,7 +138,7 @@ class TableTest extends \Myfox\Lib\TestShell
             "cid int(10) unsigned not null default '0',\n".
             "cname varchar(255) not null default '',\n".
             "autokid int(10) unsigned not null auto_increment primary key",
-            Table::instance('mirror')->sqlcreate()
+            Table::instance('mirror_v2')->sqlcreate()
         );
 
         $create = array(
@@ -148,11 +148,11 @@ class TableTest extends \Myfox\Lib\TestShell
             "num2 decimal(20,14) not null default '0.00'",
             "char1 varchar(32) not null default ''",
             "autokid int(10) unsigned not null auto_increment primary key",
-            "KEY idx_split_cid (cid)",
+            "KEY idx_cid (cid)",
         );
         $this->assertEquals(
             implode(",\n", $create),
-            Table::instance('numsplit')->sqlcreate()
+            Table::instance('numsplit_v2')->sqlcreate()
         );
     }
     /* }}} */

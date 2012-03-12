@@ -81,21 +81,21 @@ class ControllerTest extends \Myfox\Lib\TestShell
         \Myfox\Lib\Context::register('__ip__', '127.0.0.1');
 
         ob_start();
-        $controller->execute('route', array('table' => 'numsplit'));
+        $controller->execute('route', array('table' => 'numsplit_v2'));
         $output = ob_get_contents();
         $this->assertContains('[1200] Param "route" is required.', $output);
 
         ob_clean();
         ob_start();
         $controller->execute('route', array(
-            'table' => 'numsplit',
+            'table' => 'numsplit_v2',
             'route' => 'thedate:20111012,cid:1',
             'lines' => 1208,
         ));
         $output = ob_get_contents();
         $this->assertContains('[0] OK', $output);
-        $this->assertContains("numsplit\tcid:1,thedate:20111012\t1000", $output);
-        $this->assertContains("numsplit\tcid:1,thedate:20111012\t208", $output);
+        $this->assertContains("numsplit_v2\tcid:1,thedate:20111012\t1000", $output);
+        $this->assertContains("numsplit_v2\tcid:1,thedate:20111012\t208", $output);
 
         @ob_clean();
     }
@@ -109,7 +109,7 @@ class ControllerTest extends \Myfox\Lib\TestShell
         \Myfox\Lib\Context::register('__ip__', '119.32.212.64');
 
         ob_start();
-        $controller->execute('queque', array('table' => 'numsplit'));
+        $controller->execute('queque', array('table' => 'numsplit_v2'));
         $output = ob_get_contents();
         $this->assertContains('[1100] Access Denied.', $output);
 
@@ -117,13 +117,13 @@ class ControllerTest extends \Myfox\Lib\TestShell
 
         ob_clean();
         ob_start();
-        $controller->execute('queque', array('table' => 'numsplit'));
+        $controller->execute('queque', array('table' => 'numsplit_v2'));
         $output = ob_get_contents();
         $this->assertContains('[1201] Param "file" is required in post data.', $output);
 
         ob_clean();
         ob_start();
-        $controller->execute('queque', array('table' => 'numsplit'), array(
+        $controller->execute('queque', array('table' => 'numsplit_v2'), array(
             'file'      => 'ftp://user:pass@www.helloworld.com/test_file.txt',
             'route'     => 'cid:1,thedate:20111001',
             'bucket'    => 'numsplit_0.t_1_1',
@@ -144,7 +144,7 @@ class ControllerTest extends \Myfox\Lib\TestShell
         \Myfox\Lib\Context::register('__ip__', '119.32.212.64');
 
         ob_start();
-        $controller->execute('ready', array('table' => 'numsplit'));
+        $controller->execute('ready', array('table' => 'numsplit_v2'));
         $output = ob_get_contents();
         $this->assertContains('[1100] Access Denied.', $output);
 
@@ -168,7 +168,7 @@ class ControllerTest extends \Myfox\Lib\TestShell
         \Myfox\Lib\Context::register('__ip__', '119.32.212.64');
 
         ob_start();
-        $controller->execute('hello', array('table' => 'numsplit'));
+        $controller->execute('hello', array('table' => 'numsplit_v2'));
         $output = ob_get_contents();
         $this->assertContains('[1100] Access Denied.', $output);
 
@@ -176,14 +176,14 @@ class ControllerTest extends \Myfox\Lib\TestShell
 
         ob_clean();
         ob_start();
-        $controller->execute('hello', array('table' => 'numsplit'));
+        $controller->execute('hello', array('table' => 'numsplit_v2'));
         $output = ob_get_contents();
         $this->assertContains('[1200] Param "route" is required.', $output);
 
         ob_clean();
         ob_start();
         $controller->execute('hello', array(
-            'table' => 'numsplit',
+            'table' => 'numsplit_v2',
             'file'  => 'ftp://user:pass@www.helloworld.com/test_file.txt',
             'route' => 'cid:1,thedate:20111001',
             'lines' => 1111111,

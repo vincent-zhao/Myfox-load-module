@@ -50,7 +50,7 @@ class RouterTest extends \Myfox\Lib\TestShell
             $this->assertContains('Undefined table named as "i am not exists"', $e->getMessage());
         }
 
-        $mirror = \Myfox\App\Model\Table::instance('mirror');
+        $mirror = \Myfox\App\Model\Table::instance('mirror_v2');
         foreach (array(0, 1, 2, 0) AS $key => $id) {
             Setting::set('last_assign_host', 0);
             $this->assertEquals(
@@ -58,25 +58,25 @@ class RouterTest extends \Myfox\Lib\TestShell
                     ''  => array(
                         array(
                             'rows'  => 1300,
-                            'hosts' => '3,4,1,2',
-                            'table' => 'mirror_0.t_' . $mirror->get('autokid') . '_' . $id,
+                            'hosts' => '1,3,2',
+                            'table' => 'mirror_v2_0.t_' . $mirror->get('autokid') . '_' . $id,
                         ),
                     ),
                 ),
-                Router::set('mirror', array(array('count' => 1300)))
+                Router::set('mirror_v2', array(array('count' => 1300)))
             );
             if ($key == 0) {
-                $this->assertEquals(array(), Router::get('mirror'));
+                $this->assertEquals(array(), Router::get('mirror_v2'));
             }
         }
 
         $this->assertEquals(1, Setting::get('last_assign_host'));
-        $this->assertEquals(4, Setting::get('table_route_count', 'mirror'));
-        $this->assertEquals(0, (int)Setting::get('table_real_count', 'mirror'));
+        $this->assertEquals(4, Setting::get('table_route_count', 'mirror_v2'));
+        $this->assertEquals(0, (int)Setting::get('table_real_count', 'mirror_v2'));
 
-        $where  = Router::instance('mirror')->where(null);
+        $where  = Router::instance('mirror_v2')->where(null);
         $route  = self::$mysql->getRow(self::$mysql->query(sprintf(
-            "SELECT autokid,route_flag,real_table,hittime,hosts_list FROM %s WHERE table_name='mirror' AND route_flag=%d LIMIT 1",
+            "SELECT autokid,route_flag,real_table,hittime,hosts_list FROM %s WHERE table_name='mirror_v2' AND route_flag=%d LIMIT 1",
             $where['table'], Router::FLAG_PRE_IMPORT
         )));
         $this->assertEquals(0, $route['hittime']);
@@ -84,21 +84,21 @@ class RouterTest extends \Myfox\Lib\TestShell
         $real_table = $route['real_table'];
 
         // XXX: 数据装完
-        $this->assertEquals(1, Router::effect('mirror', null, $route['real_table'], '1,2'));
+        $this->assertEquals(1, Router::effect('mirror_v2', null, $route['real_table'], '1,2'));
         $this->assertEquals(array(
             'hosts_list'    => '1,2,$',
             'route_flag'    => Router::FLAG_IMPORT_END,
         ),self::$mysql->getRow(self::$mysql->query(sprintf(
-            "SELECT hosts_list,route_flag FROM %s WHERE table_name='mirror' AND real_table='%s' AND autokid = %u",
+            "SELECT hosts_list,route_flag FROM %s WHERE table_name='mirror_v2' AND real_table='%s' AND autokid = %u",
             $where['table'], $route['real_table'], $route['autokid']
         ))));
 
-        $this->assertEquals(array(), Router::get('mirror'));
+        $this->assertEquals(array(), Router::get('mirror_v2'));
 
         // xxx: 模拟路由生效
         Router::flush();
 
-        $route  = Router::get('mirror', null, true);
+        $route  = Router::get('mirror_v2', null, true);
         $this->assertEquals(1, count($route));
 
         $route  = reset($route);
@@ -118,9 +118,9 @@ class RouterTest extends \Myfox\Lib\TestShell
     /* {{{ public void test_should_sharding_table_router_set_and_get_works_fine() */
     public function test_should_sharding_table_router_set_and_get_works_fine()
     {
-        $table  = \Myfox\App\Model\Table::instance('numsplit');
+        $table  = \Myfox\App\Model\Table::instance('numsplit_v2');
         try {
-            Router::set('numsplit', array(array(
+            Router::set('numsplit_v2', array(array(
                 'field' => array(
                     'thedate'   => '20110610',
                 ),
@@ -129,7 +129,7 @@ class RouterTest extends \Myfox\Lib\TestShell
             $this->assertTrue(false);
         } catch (\Exception $e) {
             $this->assertTrue($e instanceof \Myfox\Lib\Exception);
-            $this->assertContains('Column "cid" required for table "numsplit"', $e->getMessage());
+            $this->assertContains('Column "cid" required for table "numsplit_v2"', $e->getMessage());
         }
 
         $this->assertEquals(
@@ -137,24 +137,24 @@ class RouterTest extends \Myfox\Lib\TestShell
                 'cid:1,thedate:20110610'    => array(
                     array(
                         'rows'  => 1000,
-                        'hosts' => '3,1',
-                        'table' => 'numsplit_0.t_' . $table->get('autokid') . '_0',
+                        'hosts' => '1,2',
+                        'table' => 'numsplit_v2_0.t_' . $table->get('autokid') . '_0',
                     ),
                     array(
                         'rows'  => 201,
-                        'hosts' => '1,2',
-                        'table' => 'numsplit_0.t_' . $table->get('autokid') . '_1',
+                        'hosts' => '2,1',
+                        'table' => 'numsplit_v2_0.t_' . $table->get('autokid') . '_1',
                     ),
                 ),
                 'cid:2,thedate:20110610'    => array(
                     array(
                         'rows'  => 998,
-                        'hosts' => '1,2',
-                        'table' => 'numsplit_0.t_' . $table->get('autokid') . '_1',
+                        'hosts' => '2,1',
+                        'table' => 'numsplit_v2_0.t_' . $table->get('autokid') . '_1',
                     ),
                 ),
             ),
-            Router::set('numsplit', array(
+            Router::set('numsplit_v2', array(
                 array(
                     'field' => array(
                         'thedate'   => '2011-06-10',
@@ -171,18 +171,18 @@ class RouterTest extends \Myfox\Lib\TestShell
                 ),
             )
         ));
-        $this->assertEquals(array(), Router::get('numsplit', array(
+        $this->assertEquals(array(), Router::get('numsplit_v2', array(
             'thedate'   => '2011-6-10',
             'cid'       => 1,
             'blablala'  => 2,
         )));
 
         Router::effect(
-            'numsplit', array('thedate' => 20110610, 'cid' => 1),
-            'numsplit_0.t_' . $table->get('autokid') . '_1', '1,2'
+            'numsplit_v2', array('thedate' => 20110610, 'cid' => 1),
+            'numsplit_v2_0.t_' . $table->get('autokid') . '_1', '1,2'
         ) && Router::flush();
 
-        $routes = Router::get('numsplit', array(
+        $routes = Router::get('numsplit_v2', array(
             'thedate'   => '2011-6-10',
             'cid'       => 1,
             'blablala'  => 2,
@@ -196,10 +196,10 @@ class RouterTest extends \Myfox\Lib\TestShell
         }
         $this->assertEquals(array(
             array(
-                'tbidx' => 'test_route_info_c',
+                'tbidx' => 'test_route_info_a',
                 'mtime' => true,
                 'hosts' => '1,2',
-                'table' => sprintf('numsplit_0.t_%d_1', $table->get('autokid')),
+                'table' => sprintf('numsplit_v2_0.t_%d_1', $table->get('autokid')),
             ),
         ), $result);
     }
@@ -219,11 +219,11 @@ class RouterTest extends \Myfox\Lib\TestShell
     /* {{{ public void test_should_the_secret_hello_function_works_fine() */
     public function test_should_the_secret_hello_function_works_fine()
     {
-        $hello  = Router::instance('mirror')->hello(null, $table);
+        $hello  = Router::instance('mirror_v2')->hello(null, $table);
         $this->assertContains('route_info_5', $table);
         $this->assertEquals(array(
-            'route_sign'    => 1556209608,
-            'table_name'    => 'mirror',
+            'route_sign'    => 1550635837,
+            'table_name'    => 'mirror_v2',
             'route_text'    => '',
         ), $hello);
     }
