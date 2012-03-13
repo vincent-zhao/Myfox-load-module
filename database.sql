@@ -189,3 +189,22 @@ CREATE TABLE dev_route_info_d LIKE dev_route_info_0;
 CREATE TABLE dev_route_info_e LIKE dev_route_info_0;
 CREATE TABLE dev_route_info_f LIKE dev_route_info_0;
 
+DROP TABLE IF EXISTS dev_sql_format_stat_v2;
+CREATE TABLE dev_sql_format_stat_v2 (
+	autokid int(10) unsigned not null auto_increment PRIMARY KEY,
+	total_score int(10) unsigned not null default 0,
+	query_nums int(10) unsigned not null default 0,
+	last_visit int(10) unsigned not null default 0,
+	is_trustful tinyint(2) unsigned not null default 0,
+	sql_sign int(10) unsigned not null default 0,
+	addtime datetime not null default '0000-00-00 00:00:00',
+	modtime datetime not null default '0000-00-00 00:00:00',
+	ref_tables varchar(200) not null default '',
+	sql_remark varchar(200) not null default '',
+	sql_format text not null default '',
+	sql_sample text not null default '',
+	KEY idx_sql_sign (sql_sign),
+	KEY idx_sql_stat (total_score),
+	FULLTEXT INDEX full_sql_table (ref_tables)
+) ENGINE = MyISAM DEFAULT CHARSET=UTF8;
+
