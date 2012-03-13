@@ -93,6 +93,9 @@ class Monitor extends \Myfox\App\Worker
         $offset = (int)strtotime(Setting::get('monitor_consist_check'));
         foreach ($tables AS $table) {
             $table  = end($table);
+            if (preg_match('/(_merge)$/i', $table)) {
+                continue;
+            }
             $split  = $mysql->getAll($mysql->query(sprintf(
                 'SELECT real_table,hosts_list,route_text,table_name FROM %s WHERE modtime >= %d AND route_flag IN (%d, %d)',
                 $table, $offset, Router::FLAG_IMPORT_END, Router::FLAG_NORMAL_USE
@@ -105,6 +108,10 @@ class Monitor extends \Myfox\App\Worker
                 $server = array();
                 foreach (explode(',', trim($row['hosts_list'], '{},$')) AS $id) {
                     $server[] = self::hostname($id);
+                }
+                $server = array_filter($server);
+                if (empty($server)) {
+                    continue;
                 }
 
                 $result = Consist::check($row['real_table'], $server);

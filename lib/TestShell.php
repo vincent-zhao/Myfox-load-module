@@ -47,6 +47,9 @@ class TestShell extends \PHPUnit_Framework_TestCase
         $query  = sprintf("SHOW TABLES LIKE '%s%s%%'", $mysql->option('prefix'), trim($prefix));
         foreach ((array)$mysql->getAll($mysql->query($query)) AS $table) {
             $table  = end($table);
+            if (preg_match('/(_merge)$/', $table)) {
+                continue;
+            }
             $mysql->query(sprintf('TRUNCATE TABLE %s', $table));
         }
 
