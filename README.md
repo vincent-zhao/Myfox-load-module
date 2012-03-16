@@ -20,9 +20,9 @@
 
 * Myfox用一个常驻进程来处理外部提交的数据装载任务，或者其他任务。这个进程您可以通过下列命
   令来启动：
-```bash
-nohup /usr/bin/php bin/run.php processor &
-```
+
+        nohup /usr/bin/php bin/run.php processor &
+
 # 代码结构 #
 
          .
