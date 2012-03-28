@@ -21,22 +21,26 @@
 * Myfox用一个常驻进程来处理外部提交的数据装载任务，或者其他任务。这个进程您可以通过下列命
   令来启动：
 
-> nohup /usr/bin/php bin/run.php processor &
+```bash
+$ nohup /usr/bin/php bin/run.php processor &
+```
 
 # 代码结构 #
 
-> .
-> |-- READEME								自述文件
-> |-- app									Myfox自身类代码
-> |-- bin									后台运行脚本的启动命令
-> |-- build									build文件，采用phing进行代码build
-> |-- build.xml
-> |-- etc									配置文件
-> |-- lib									Myfox无关的PHP Class代码
-> |-- release.properties					release模式的properties文件
-> |-- resource								部署在Hadoop系统上的shell脚本模版
-> |-- test									测试代码
-> `-- www									htdocs目录, index.php作为统一入口程序
+```bash
+ .
+ |-- READEME								自述文件
+ |-- app									Myfox自身类代码
+ |-- bin									后台运行脚本的启动命令
+ |-- build									build文件，采用phing进行代码build
+ |-- build.xml
+ |-- etc									配置文件
+ |-- lib									Myfox无关的PHP Class代码
+ |-- release.properties					release模式的properties文件
+ |-- resource								部署在Hadoop系统上的shell脚本模版
+ |-- test									测试代码
+ `-- www									htdocs目录, index.php作为统一入口程序
+```
 
 # 环境依赖 #
 
@@ -71,9 +75,10 @@ phing来管理。因此，对于配置文件的管理，我仍然建议你采用
 
 * 测试数据装入：
 
-> sh bin/gateway_call_myfox_import.sh -tnumsplit_v2 -rthedate=20110610,cid=1 test/unit/resource/numsplit_import_data_file.txt
-> sh bin/gateway_call_myfox_import.sh -tmirror_v2 test/unit/resource/mirror_import_data_file.txt 1
-
+```bash
+$ sh bin/gateway_call_myfox_import.sh -tnumsplit_v2 -rthedate=20110610,cid=1 test/unit/resource/numsplit_import_data_file.txt
+$ sh bin/gateway_call_myfox_import.sh -tmirror_v2 test/unit/resource/mirror_import_data_file.txt 1
+```
 # TODO #
 
 * 支持online alter table;
