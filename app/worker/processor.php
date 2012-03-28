@@ -125,7 +125,7 @@ class Processor extends \Myfox\App\Worker
      */
     public function interval()
     {
-        return max(1, (int)($this->option['n'] / (1 + count($this->tasks))));
+        return empty($this->tasks) ? 120000 : 1;
     }
     /* }}} */
 

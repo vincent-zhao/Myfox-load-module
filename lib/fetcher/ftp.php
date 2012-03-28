@@ -6,7 +6,7 @@
 // | Author: aleafs <pengchun@taobao.com>	    							|
 // +------------------------------------------------------------------------+
 //
-// $Id: fileset.php 22 2010-04-15 16:28:45Z zhangxc83 $
+// $Id: ftp.php 22 2010-04-15 16:28:45Z zhangxc83 $
 
 namespace Myfox\Lib\Fetcher;
 
@@ -67,102 +67,102 @@ class Ftp
     {
         if (!$this->connect()) {
             return false;
-}
+        }
 
-// TODO:
-//
-// @ 基于md5文件的抓取 , 变更判断
-// @ 基于 filesize + filemtime 的变更判断
-if (!$this->get($this->option['path'], $fname)) {
-    return false;
-}
+        // TODO:
+        //
+        // @ 基于md5文件的抓取 , 变更判断
+        // @ 基于 filesize + filemtime 的变更判断
+        if (!$this->get($this->option['path'], $fname)) {
+            return false;
+        }
 
-return true;
-}
-/* }}} */
-
-/* {{{ public Mixture lastError() */
-/**
- * 获取错误描述
- *
- * @access public
- * @return Mixture
- */
-public function lastError()
-{
-    return $this->error;
-}
-/* }}} */
-
-/* {{{ private Boolean connect() */
-/**
- * 连接FTP服务器
- *
- * @access private
- * @return Boolean true or false
- */
-private function connect()
-{
-    if (!empty($this->handle)) {
         return true;
     }
+    /* }}} */
 
-    $this->handle   = ftp_connect($this->option['host'], $this->option['port'], $this->tmout);
-    if (empty($this->handle)) {
-        $this->error    = sprintf(
-            'Connect failed with the host as "%s" on port %d',
-            $this->option['host'], $this->option['port']
-        );
-        return false;
+    /* {{{ public Mixture lastError() */
+    /**
+     * 获取错误描述
+     *
+     * @access public
+     * @return Mixture
+     */
+    public function lastError()
+    {
+        return $this->error;
     }
+    /* }}} */
 
-    if (!ftp_login($this->handle, $this->option['user'], $this->option['pass'])) {
-        $this->error    = sprintf(
-            'Access Denied for user "%s", use password %s',
-            $this->option['user'], empty($this->option['pass']) ? 'NO' : 'YES'
-        );
-        return false;
+    /* {{{ private Boolean connect() */
+    /**
+     * 连接FTP服务器
+     *
+     * @access private
+     * @return Boolean true or false
+     */
+    private function connect()
+    {
+        if (!empty($this->handle)) {
+            return true;
+        }
+
+        $this->handle   = ftp_connect($this->option['host'], $this->option['port'], $this->tmout);
+        if (empty($this->handle)) {
+            $this->error    = sprintf(
+                'Connect failed with the host as "%s" on port %d',
+                $this->option['host'], $this->option['port']
+            );
+            return false;
+        }
+
+        if (!ftp_login($this->handle, $this->option['user'], $this->option['pass'])) {
+            $this->error    = sprintf(
+                'Access Denied for user "%s", use password %s',
+                $this->option['user'], empty($this->option['pass']) ? 'NO' : 'YES'
+            );
+            return false;
+        }
+        ftp_pasv($this->handle, true);
+
+        return true;
     }
-    ftp_pasv($this->handle, true);
+    /* }}} */
 
-    return true;
-}
-/* }}} */
-
-/* {{{ private void close() */
-/**
- *  关闭连接
- *
- *  @access private
- *  @return void
- */
-private function close()
-{
-    if (!empty($this->handle)) {
-        ftp_close($this->handle);
+    /* {{{ private void close() */
+    /**
+     *  关闭连接
+     *
+     *  @access private
+     *  @return void
+     */
+    private function close()
+    {
+        if (!empty($this->handle)) {
+            ftp_close($this->handle);
+        }
+        $this->handle   = null;
     }
-    $this->handle   = null;
-}
-/* }}} */
+    /* }}} */
 
-/* {{{ private Boolean get() */
-/**
- * 获取文件
- *
- * @access private
- * @return Boolean true or false
- */
-private function get($remote, $local)
-{
-    $fname  = sprintf('%s.%d', $local, getmypid());
-    if (!ftp_get($this->handle, $fname, $remote, FTP_BINARY)) {
-        @unlink($fname);
-        $this->error    = sprintf('');
-        return false;
+    /* {{{ private Boolean get() */
+    /**
+     * 获取文件
+     *
+     * @access private
+     * @return Boolean true or false
+     */
+    private function get($remote, $local)
+    {
+        $fname  = sprintf('%s.%d', $local, getmypid());
+        if (!ftp_get($this->handle, $fname, $remote, FTP_BINARY)) {
+            @unlink($fname);
+            $this->error    = sprintf('');
+            return false;
+        }
+
+        return rename($fname, $local);
     }
-
-    return rename($fname, $local);
-}
-/* }}} */
+    /* }}} */
 
 }

@@ -30,7 +30,7 @@ class Monitor extends \Myfox\App\Worker
     /* {{{ 成员变量 */
 
     protected $option	= array(
-        'sleep'     => 300,
+        'sleep'     => 300000,
     );
 
     /* }}} */
