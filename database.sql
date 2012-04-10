@@ -151,11 +151,8 @@ CREATE TABLE IF NOT EXISTS dev_task_queque (
 ) ENGINE = MyISAM DEFAULT CHARSET=UTF8;
 
 -- 路由表
-DROP TABLE IF EXISTS dev_route_info_0,dev_route_info_1,dev_route_info_2,dev_route_info_3;
-DROP TABLE IF EXISTS dev_route_info_4,dev_route_info_5,dev_route_info_6,dev_route_info_7;
-DROP TABLE IF EXISTS dev_route_info_8,dev_route_info_9,dev_route_info_a,dev_route_info_b;
-DROP TABLE IF EXISTS dev_route_info_c,dev_route_info_d,dev_route_info_e,dev_route_info_f;
-CREATE TABLE dev_route_info_0 (
+DROP TABLE IF EXISTS dev_route_info;
+CREATE TABLE dev_route_info (
 	autokid int(10) unsigned not null auto_increment,
 	addtime int(10) unsigned not null default 0,
 	modtime int(10) unsigned not null default 0,
@@ -172,22 +169,6 @@ CREATE TABLE dev_route_info_0 (
 	KEY idx_route_sign (route_sign, route_flag),
 	KEY idx_route_time (modtime, is_archive)
 ) ENGINE = MyISAM DEFAULT CHARSET=UTF8;
-
-CREATE TABLE dev_route_info_1 LIKE dev_route_info_0;
-CREATE TABLE dev_route_info_2 LIKE dev_route_info_0;
-CREATE TABLE dev_route_info_3 LIKE dev_route_info_0;
-CREATE TABLE dev_route_info_4 LIKE dev_route_info_0;
-CREATE TABLE dev_route_info_5 LIKE dev_route_info_0;
-CREATE TABLE dev_route_info_6 LIKE dev_route_info_0;
-CREATE TABLE dev_route_info_7 LIKE dev_route_info_0;
-CREATE TABLE dev_route_info_8 LIKE dev_route_info_0;
-CREATE TABLE dev_route_info_9 LIKE dev_route_info_0;
-CREATE TABLE dev_route_info_a LIKE dev_route_info_0;
-CREATE TABLE dev_route_info_b LIKE dev_route_info_0;
-CREATE TABLE dev_route_info_c LIKE dev_route_info_0;
-CREATE TABLE dev_route_info_d LIKE dev_route_info_0;
-CREATE TABLE dev_route_info_e LIKE dev_route_info_0;
-CREATE TABLE dev_route_info_f LIKE dev_route_info_0;
 
 DROP TABLE IF EXISTS dev_sql_format_stat_v2;
 CREATE TABLE dev_sql_format_stat_v2 (
