@@ -238,10 +238,7 @@ class Router
      */
     private static function table($route)
     {
-        return sprintf(
-            '%sroute_info_%s',
-            self::$mysql->option('prefix'), substr(dechex($route), 0, 1)
-        );
+        return sprintf('%sroute_info', self::$mysql->option('prefix'));
     }
     /* }}} */
 

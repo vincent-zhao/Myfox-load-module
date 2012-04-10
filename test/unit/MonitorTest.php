@@ -78,7 +78,7 @@ class MonitorTest extends \Myfox\Lib\TestShell
         }
 
         $this->assertEquals(1, self::$mysql->query(sprintf(
-            "INSERT INTO %sroute_info_0 (real_table,hosts_list,table_name,modtime,route_flag)".
+            "INSERT INTO %sroute_info (real_table,hosts_list,table_name,modtime,route_flag)".
             " VALUES ('test.test_a', '%s', 'test',%d,%d)",
             self::$mysql->option('prefix'), implode(',', $ids), time(), \Myfox\App\Model\Router::FLAG_IMPORT_END
         )));

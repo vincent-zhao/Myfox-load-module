@@ -196,7 +196,7 @@ class RouterTest extends \Myfox\Lib\TestShell
         }
         $this->assertEquals(array(
             array(
-                'tbidx' => 'test_route_info_a',
+                'tbidx' => 'test_route_info',
                 'mtime' => true,
                 'hosts' => '1,2',
                 'table' => sprintf('numsplit_v2_0.t_%d_1', $table->get('autokid')),
@@ -220,7 +220,7 @@ class RouterTest extends \Myfox\Lib\TestShell
     public function test_should_the_secret_hello_function_works_fine()
     {
         $hello  = Router::instance('mirror_v2')->hello(null, $table);
-        $this->assertContains('route_info_5', $table);
+        $this->assertContains('route_info', $table);
         $this->assertEquals(array(
             'route_sign'    => 1550635837,
             'table_name'    => 'mirror_v2',

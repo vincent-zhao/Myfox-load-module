@@ -123,6 +123,7 @@ class Dispatcher
             ));
             self::$timeout  = false;
         } catch (\Exception $e) {
+            self::$timeout  = false;
             $this->log->error('EXCEPTION', array(
                 'url'   => $this->url,
                 'post'  => $post,
