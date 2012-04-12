@@ -20,7 +20,7 @@ class Mysql
 
     /* {{{ 静态常量 */
 
-    const MANIPULATE    = '/^(INSERT|REPLACE|DELETE|UPDATE|ALTER|CREATE|DROP|LOAD|TRUNCATE)\s+/is';
+    const NOMANIPULATE  = '/^(SELECT|SHOW|DESC|DESCRIBE)\s+/is';
 
     /* }}} */
 
@@ -599,7 +599,7 @@ class Mysql
         }
 
         $rs = $this->handle->query($query, $async ? MYSQLI_ASYNC : null);
-        if (false !== $rs && true === $modify) {
+        if ($rs && !($rs instanceof \mysqli_result)) {
             $rs = $this->handle->affected_rows;
         }
         $this->error    = $this->handle->error;
@@ -656,7 +656,7 @@ class Mysql
      */
     private static function ismodify($query)
     {
-        return preg_match(self::MANIPULATE, trim($query)) ? true : false;
+        return preg_match(self::NOMANIPULATE, trim($query)) ? false : true;
     }
     /* }}} */
 

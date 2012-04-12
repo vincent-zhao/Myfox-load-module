@@ -18,9 +18,7 @@ class Uniquebuilder extends \Myfox\App\Worker
 
     private $hosts = array();
 
-    private $splits = array();
-
-    private $prevCheckTime = 0;
+    private $routetab = 'route_info';
 
     private $checkCount = 3;
 
@@ -39,9 +37,6 @@ class Uniquebuilder extends \Myfox\App\Worker
     public function __construct($option = array('m' => 'run'))
     {
         parent::__construct($option);
-        for($i = 0;$i < 16;$i++){
-            array_push($this->splits,sprintf('route_info_%s',dechex($i)));
-        }
 
         $this->mysql = \Myfox\Lib\Mysql::instance('default');
 
@@ -95,32 +90,28 @@ class Uniquebuilder extends \Myfox\App\Worker
             $uniquekeys = array();
             $count      = 0;
             
-            foreach($this->splits AS $split){
-                $routes = $this->get_route_infos($split,$table['table_name']);
-                if(empty($routes)){continue;}
+            $routes = $this->get_route_infos($table['table_name']);
+            if(empty($routes)){continue;}
 
-                foreach($routes AS $route){
-                    $begin = time();
-                    if($begin - $route['addtime'] < $this->option['interval']){
-                        if(++$count > $this->checkCount){
-                            break 2;
-                        }
-                        $keys = $this->get_unique_keys($route);
-                        if(empty($keys)){
-                            $count--;
-                            continue;
-                        }
-                        $uniquekeys = array_unique(array_merge($uniquekeys,$keys));
-
-                        $timeuse = time() - $begin;
-                        $this->log->notice('INITING TABLE LIST',array(
-                            'table_name' => $table['table_name'],
-                            'percent'    => ($counter*100 / $length),
-                            'route'      => $route,
-                            'timeUse'    => $timeuse
-                        ));
-                    }
+            foreach($routes AS $route){
+                $begin = time();
+                if(++$count > $this->checkCount){
+                    break;
                 }
+                $keys = $this->get_unique_keys($route);
+                if(empty($keys)){
+                    $count--;
+                    continue;
+                }
+                $uniquekeys = array_unique(array_merge($uniquekeys,$keys));
+
+                $timeuse = time() - $begin;
+                $this->log->notice('INITING TABLE LIST',array(
+                    'table_name' => $table['table_name'],
+                    'percent'    => ($counter*100 / $length),
+                    'route'      => $route,
+                    'timeUse'    => $timeuse
+                ));
             }
 
             $result = $this->set_table_unique_keys($table['table_name'],$uniquekeys);
@@ -146,41 +137,34 @@ class Uniquebuilder extends \Myfox\App\Worker
         }
         $this->log->notice('START CHECK',array());
 
-        foreach($this->splits AS $split){
-            $routes = $this->get_route_infos($split);
-            if(empty($routes)){
+        $routes = $this->get_route_infos();
+
+        $length  = count($routes);
+        $counter = 0;
+
+        foreach($routes AS $route){
+            $counter ++;
+            $begin = time();
+
+            $keys = $this->get_table_unique_keys($route['table_name']);
+            $uniquekeys = $this->get_unique_keys($route,$keys);
+            if(empty($uniquekeys)){
                 continue;
             }
 
-            $length  = count($routes);
-            $counter = 0;
+            $timeuse = time() - $begin;
+            $this->log->notice('DEAL NEW SPLIT',array(
+                'percent' => ($counter*100/$length),
+                'route'   => $route,
+                'timeUse' => $timeuse
+            ));
 
-            foreach($routes AS $route){
-                $counter ++;
-                $begin = time();
-
-                $keys = $this->get_table_unique_keys($route['table_name']);
-                $uniquekeys = $this->get_unique_keys($route,$keys);
-                if(empty($uniquekeys)){
-                    continue;
-                }
-
-                $timeuse = time() - $begin;
-                $this->log->notice('DEAL NEW SPLIT',array(
-                    'split'   => $split,
-                    'percent' => ($counter*100/$length),
-                    'route'   => $route,
-                    'timeUse' => $timeuse
+            $result = $this->set_split_unique_keys($route,$uniquekeys);
+            if(empty($result)){
+                $this->log->error('SET SPLIT FAULT',array(
+                    'route'      => $route,
+                    'uniquekeys' => $uniquekeys
                 ));
-
-                $result = $this->set_split_unique_keys($split,$route,$uniquekeys);
-                if(empty($result)){
-                    $this->log->error('SET SPLIT FAULT',array(
-                        'split'      => $split,
-                        'route'      => $route,
-                        'uniquekeys' => $uniquekeys
-                    ));
-                }
             }
         }
         Setting::set('unique_last_check',date('Y-m-d H:i:s', time()));
@@ -206,7 +190,7 @@ class Uniquebuilder extends \Myfox\App\Worker
      * @param {String} table 某张具体表的路由信息
      * @return {Array} 此路由分片表中所有的分片信息
      */
-    private function get_route_infos($split,$table = '')
+    private function get_route_infos($table = '')
     {
         $sql = '';
         if(empty($table)){
@@ -214,16 +198,17 @@ class Uniquebuilder extends \Myfox\App\Worker
                 'SELECT autokid,table_name,real_table,hosts_list FROM %s%s 
                 WHERE route_flag >= %s AND route_flag < %s AND modtime >= %s',
                 $this->mysql->escape($this->mysql->option('prefix')),
-                $this->mysql->escape($split),'300','400',
+                $this->routetab,'300','400',
                 strtotime(Setting::get('unique_last_check'))
             );
         }else{
             $sql = sprintf(
                 "SELECT autokid,addtime,real_table,hosts_list FROM %s%s 
-                WHERE table_name = '%s' AND route_flag >= %s AND route_flag < %s",
+                WHERE table_name = '%s' AND route_flag >= %s AND route_flag < %s AND addtime > %s",
                 $this->mysql->escape($this->mysql->option('prefix')),
-                $this->mysql->escape($split),
-                $this->mysql->escape($table),'300','400'
+                $this->routetab,
+                $this->mysql->escape($table),'300','400',
+                time() - $this->option['interval']
             );
         }
         return $this->mysql->getAll($this->mysql->query($sql));
@@ -284,7 +269,7 @@ class Uniquebuilder extends \Myfox\App\Worker
 
             $part = '';
             foreach($columns AS $column){
-                if(!preg_match('/(int\([1]?[0-9]\))|(varchar\([1-6]?[0-9]\))/i',$column['Type'])){
+                if(!preg_match('/(int\([1]?[0-9]\))|(varchar\([1-6]?[0-9]\))/i',$column['Type']) || preg_match('/(num$)|(max$)|(min$)|(pv$)|(uv$)|(pv$)|(uv$)/i',$column['Field'])){
                     continue;
                 }
 
@@ -297,7 +282,6 @@ class Uniquebuilder extends \Myfox\App\Worker
             $part = $part.'COUNT(*) AS total';
 
             $get  = $mysql->getAll($mysql->query(sprintf($sql,$part)));
-
             foreach($columns AS $column){
                 if(empty($get[0][$column['Field']])){
                     continue;
@@ -307,7 +291,6 @@ class Uniquebuilder extends \Myfox\App\Worker
                     array_push($result,$column['Field']);
                 }
             }
-
         }else{
             $part = '';
             foreach($keys AS $key){
@@ -320,7 +303,6 @@ class Uniquebuilder extends \Myfox\App\Worker
             $part = $part.'COUNT(*) AS total';
 
             $get  = $mysql->getAll($mysql->query(sprintf($sql,$part)));
-
             foreach($keys AS $key){
                 if($get[0][$key] >= $get[0]['total']*0.8){
                     array_push($result,$key);
@@ -360,19 +342,18 @@ class Uniquebuilder extends \Myfox\App\Worker
     /*{{{ set_split_unique_keys()*/
     /**
      * 设置每个分片路由的uniquekey值
-     * @param {String} split 分片表名
      * @param {Array} route分片路由信息
      * @param {Array} uniquekeys unique字段们
      * @return void
      */
-    private function set_split_unique_keys($split,$route,$uniquekeys)
+    private function set_split_unique_keys($route,$uniquekeys)
     {
         array_push($uniquekeys,(array_pop($uniquekeys).'$'));
         $keystring = implode(';',$uniquekeys);
         return $this->mysql->query(sprintf(
             "UPDATE %s%s SET unique_key = '%s' WHERE autokid = %s",
             $this->mysql->escape($this->mysql->option('prefix')),
-            $this->mysql->escape($split),
+            $this->routetab,
             $this->mysql->escape($keystring),
             $this->mysql->escape($route['autokid'])
         ));

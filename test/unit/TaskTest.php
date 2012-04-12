@@ -77,12 +77,12 @@ class TaskTest extends \Myfox\Lib\TestShell
     /* {{{ public void test_should_example_task_works_fine() */
     public function test_should_example_task_works_fine()
     {
-        $task	= new \Myfox\App\Task\Example(-1, array('a' => 'none'));
+        $task   = new \Myfox\App\Task\Example(-1, array('a' => 'none'));
         $this->assertEquals('none', $task->option('a'));
         $this->assertEquals(Task::FAIL, $task->execute());
         $this->assertContains('Required column named as "type"', $task->lastError());
 
-        $task	= new \Myfox\App\Task\Example(-1, array('type' => 'none'));
+        $task   = new \Myfox\App\Task\Example(-1, array('type' => 'none'));
 
         $this->assertEquals(0, $task->counter);
         $this->assertEquals(Task::SUCC, $task->execute());
@@ -141,7 +141,7 @@ class TaskTest extends \Myfox\Lib\TestShell
     /* {{{ public void test_should_import_numsplit_works_fine() */
     public function test_should_import_numsplit_works_fine()
     {
-        $task	= new \Myfox\App\Task\Import(-1, array('table' => 'numsplit_v2'));
+        $task   = new \Myfox\App\Task\Import(-1, array('table' => 'numsplit_v2'));
         $this->assertEquals(Task::IGNO, $task->execute());
 
         self::cleanTable('default', 'route_info');
@@ -208,11 +208,11 @@ class TaskTest extends \Myfox\Lib\TestShell
     /* {{{ public void test_should_ready_task_works_fine() */
     public function test_should_ready_task_works_fine()
     {
-        $task	= new \Myfox\App\Task\Ready(-1, array());
+        $task   = new \Myfox\App\Task\Ready(-1, array());
         $this->assertEquals(Task::IGNO, $task->execute());
 
         \Myfox\App\Setting::set('last_date', '2011-10-01');
-        $task	= new \Myfox\App\Task\Ready(-1, array(
+        $task   = new \Myfox\App\Task\Ready(-1, array(
             'thedate'   => '2011-10-01',
             'priority'  => 1,
         ));
@@ -228,7 +228,7 @@ class TaskTest extends \Myfox\Lib\TestShell
         ));
 
         \Myfox\App\Setting::set('last_date', '2011-10-01');
-        $task	= new \Myfox\App\Task\Ready(100, array(
+        $task   = new \Myfox\App\Task\Ready(100, array(
             'thedate'   => '2011-10-02',
             'priority'  => 20,
         ));
@@ -238,7 +238,7 @@ class TaskTest extends \Myfox\Lib\TestShell
         self::$mysql->query(sprintf('TRUNCATE TABLE %stask_queque', self::$mysql->option('prefix')));
         \Myfox\App\Setting::set('last_date', '2011-10-01');
 
-        $task	= new \Myfox\App\Task\Ready(100, array(
+        $task   = new \Myfox\App\Task\Ready(100, array(
             'thedate'   => '2011-10-02',
             'priority'  => 20,
         ));
@@ -249,10 +249,10 @@ class TaskTest extends \Myfox\Lib\TestShell
     /* {{{ public void test_should_rsplit_works_fine() */
     public function test_should_rsplit_works_fine()
     {
-        $task	= new \Myfox\App\Task\Rsplit(-1, array());
+        $task   = new \Myfox\App\Task\Rsplit(-1, array());
         $this->assertEquals(Task::IGNO, $task->execute());
 
-        $task	= new \Myfox\App\Task\Rsplit(-1, array(
+        $task   = new \Myfox\App\Task\Rsplit(-1, array(
             'table'     => 'i_am_not_exists',
             'route'     => '',
             'lines'     => 1000,
@@ -262,7 +262,7 @@ class TaskTest extends \Myfox\Lib\TestShell
         $this->assertEquals(Task::IGNO, $task->execute());
         $this->assertContains('Undefined table named as "i_am_not_exists"', $task->lastError());
 
-        $task	= new \Myfox\App\Task\Rsplit(-1, array(
+        $task   = new \Myfox\App\Task\Rsplit(-1, array(
             'table' => 'numsplit_v2',
             'route' => 'thedate:2011-01-01,cid:23',
             'lines' => 1201,
@@ -286,6 +286,30 @@ class TaskTest extends \Myfox\Lib\TestShell
             'task_flag' => \Myfox\App\Queque::FLAG_WAIT,
             'task_type' => 'import',
         ), $result);
+    }
+    /* }}} */
+
+    /* {{{ public void test_should_check_table_works_fine() */
+    public function test_should_check_table_works_fine()
+    {
+        $task   = new \Myfox\App\Task\Checktable(-1, array('host' => '1,2'));
+        $this->assertEquals(Task::IGNO, $task->execute());
+        $this->assertContains('Required column named as "path"', $task->lastError());
+
+        $task   = new \Myfox\App\Task\Checktable(-1, array(
+            'host'  => '1,2',
+            'path'  => 'i_am.not_exists',
+        ));
+        $this->assertEquals(Task::SUCC, $task->execute());
+
+        self::create_test_table('edp2_9902', 'mirror_0.task_test', 'mirror_0.mirror_583_2');
+        $this->assertEquals(true,   self::check_table_exists('edp2_9902', 'mirror_0.mirror_583_2'));
+
+        $task   = new \Myfox\App\Task\Checktable(-1, array(
+            'host'  => '1,2',
+            'path'  => 'mirror_0.mirror_583_2',
+        ), '2');
+        $this->assertEquals(Task::SUCC, $task->execute());
     }
     /* }}} */
 

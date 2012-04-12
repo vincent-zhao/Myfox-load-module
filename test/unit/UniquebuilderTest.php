@@ -207,7 +207,7 @@ class UniquebuilderTest extends \Myfox\Lib\TestShell{
 		$uniqueBuilder->execute();
 
 		$res = $this->mysql->getAll($this->mysql->query(sprintf(
-			"select unique_key from %sroute_info where table_name = 'testTable'",
+			"select unique_key from %sroute_info where table_name = 'testTable' and real_table = 'meta_myfox_config.test_table_real1'",
 			$this->mysql->option("prefix")
 		)));
 		$this->assertEquals(array(
@@ -215,7 +215,7 @@ class UniquebuilderTest extends \Myfox\Lib\TestShell{
 		),$res[0]);
 
 		$res = $this->mysql->getAll($this->mysql->query(sprintf(
-			"select unique_key from %sroute_info where table_name = 'testTable'",
+			"select unique_key from %sroute_info where table_name = 'testTable' and real_table = 'meta_myfox_config.test_table_real2'",
 			$this->mysql->option("prefix")
 		)));
 		$this->assertEquals(array(
@@ -244,7 +244,7 @@ class UniquebuilderTest extends \Myfox\Lib\TestShell{
 		));
 
 		$this->mysql->query(sprintf(
-			"UPDATE %sroute_info SET modtime = %s WHERE table_name = 'testTable'",
+			"UPDATE %sroute_info SET modtime = %s WHERE table_name = 'testTable' AND real_table = 'meta_myfox_config.test_table_real1'",
 			$this->mysql->option('prefix'),time()
 		));
 
@@ -254,7 +254,7 @@ class UniquebuilderTest extends \Myfox\Lib\TestShell{
 		$uniqueBuilder->execute();
 
 		$res = $this->mysql->getAll($this->mysql->query(sprintf(
-			"select unique_key from %sroute_info where table_name='testTable'",
+			"select unique_key from %sroute_info where table_name='testTable' AND real_table = 'meta_myfox_config.test_table_real1'",
 			$this->mysql->option("prefix")
 		)));
 		$this->assertEquals(array(
@@ -292,7 +292,7 @@ class UniquebuilderTest extends \Myfox\Lib\TestShell{
 		$uniqueBuilder->execute();
 
 		$res = $this->mysql->getAll($this->mysql->query(sprintf(
-			"select unique_key from %sroute_info where table_name = 'testTable'",
+			"select unique_key from %sroute_info where table_name = 'testTable' and real_table = 'meta_myfox_config.test_table_real3'",
 			$this->mysql->option("prefix")
 		)));
 		$this->assertEquals(array(
