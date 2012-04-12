@@ -83,7 +83,14 @@ $ sh bin/gateway_call_myfox_import.sh -tmirror_v2 test/unit/resource/mirror_impo
 
 * 支持online alter table;
 
-* 根据unique key进行SQL语句优化;
+* 根据unique key进行SQL语句优化; [done]
 
-* 冷热数据分离.
-
+# Contributors #
+```
+project: myfox
+commits: 43
+files  : 110
+authors: 
+39  aleafs                  90.7%
+4  Zhiqiang Zhao           9.3%
+```
