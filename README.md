@@ -30,16 +30,16 @@ $ nohup /usr/bin/php bin/run.php processor &
 ```bash
  .
  |-- READEME								自述文件
- |-- app									Myfox自身类代码
- |-- bin									后台运行脚本的启动命令
+ |-- app									  Myfox自身类代码
+ |-- bin									  后台运行脚本的启动命令
  |-- build									build文件，采用phing进行代码build
  |-- build.xml
- |-- etc									配置文件
- |-- lib									Myfox无关的PHP Class代码
- |-- release.properties					release模式的properties文件
+ |-- etc									  配置文件
+ |-- lib									  Myfox无关的PHP Class代码
+ |-- release.properties			release模式的properties文件
  |-- resource								部署在Hadoop系统上的shell脚本模版
- |-- test									测试代码
- `-- www									htdocs目录, index.php作为统一入口程序
+ |-- test									  测试代码
+ `-- www									  htdocs目录, index.php作为统一入口程序
 ```
 
 # 环境依赖 #
@@ -91,6 +91,6 @@ project: myfox
 commits: 43
 files  : 110
 authors: 
-39  aleafs                  90.7%
-4  Zhiqiang Zhao           9.3%
+  39  aleafs                90.7%
+  4  Zhiqiang Zhao          9.3%
 ```
