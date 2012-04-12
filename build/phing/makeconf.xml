@@ -1,153 +1,163 @@
 <project name="makeconf" basedir="." default="-makeconf"
-	description="make all config files">
+    description="make all config files">
 
-	<target name="-makeconf" description="Make all config files">
-		<phingcall target="-cleanup" />
-		<phingcall target="-dev" />
-		<phingcall target="-bash" />
-		<phingcall target="-unittest" />
-	</target>
+    <target name="-makeconf" description="Make all config files">
+        <phingcall target="-cleanup" />
+        <phingcall target="-dev" />
+        <phingcall target="-bash" />
+        <phingcall target="-unittest" />
+    </target>
 
-	<target name="-cleanup" description="delete old config files.">
-		<phingcall target="-cleanup-dev" />
-		<phingcall target="-cleanup-unittest" />
-	</target>
+    <target name="-cleanup" description="delete old config files.">
+        <phingcall target="-cleanup-dev" />
+        <phingcall target="-cleanup-unittest" />
+    </target>
 
-	<target name="-cleanup-dev" description="Delete all config files.">
-		<delete>
-			<fileset dir="etc/">
-				<include name="*.ini" />
-			</fileset>
-		</delete>
-	</target>
+    <target name="-cleanup-dev" description="Delete all config files.">
+        <delete>
+            <fileset dir="etc/">
+                <include name="*.ini" />
+            </fileset>
+        </delete>
+    </target>
 
-	<target name="-cleanup-unittest" description="Delete all config files.">
-		<delete>
-			<fileset dir="test/unit/ini/">
-				<include name="*.ini" />
-				<exclude name="config_test.ini" />
-			</fileset>
-		</delete>
-	</target>
+    <target name="-cleanup-unittest" description="Delete all config files.">
+        <delete>
+            <fileset dir="test/unit/ini/">
+                <include name="*.ini" />
+                <exclude name="config_test.ini" />
+            </fileset>
+        </delete>
+    </target>
 
-	<target name="-dev" description="Make configure files for development">
-		<phingcall target="-cleanup-dev" />
-		<copy file="build/tpl/myfox.ini" todir="etc" overwrite="true">
-			<filterchain>
-				<replacetokens begintoken="##" endtoken="##">
-					<token key="run.mode" value="${run.mode}" />
-					<token key="run.timeout" value="60" />
-					<token key="url.prefix" value="${env.USER}/myfox2" />
-					<token key="log.url" value="log://notice.warn.error/${env.HOME}/myfox.log" />
-					<token key="dir.root" value="${dir.root}" />
+    <target name="-dev" description="Make configure files for development">
+        <phingcall target="-cleanup-dev" />
+        <copy file="build/tpl/myfox.ini" todir="etc" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="##" endtoken="##">
+                    <token key="run.mode" value="${run.mode}" />
+                    <token key="run.timeout" value="60" />
+                    <token key="url.prefix" value="${env.USER}/myfox2" />
+                    <token key="log.url" value="log://notice.warn.error/${env.HOME}/myfox.log" />
+                    <token key="dir.root" value="${dir.root}" />
 
-					<token key="myfox.download.path" value="${myfox.download.path}" />
-					<token key="myfox.filesplit.path" value="${myfox.filesplit.path}" />
-				</replacetokens>
-			</filterchain>
-		</copy>
+                    <token key="myfox.download.path" value="${myfox.download.path}" />
+                    <token key="myfox.filesplit.path" value="${myfox.filesplit.path}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
 
-		<copy file="build/tpl/mysql.ini" todir="etc" overwrite="true">
-			<filterchain>
-				<replacetokens begintoken="##" endtoken="##">
-					<token key="default.mysql.logurl" value="${default.mysql.logurl}" />
-					<token key="default.mysql.dbname" value="${default.mysql.dbname}" />
-					<token key="default.mysql.prefix" value="${default.mysql.prefix}" />
-					<token key="default.mysql.master" value="${default.mysql.master}" />
-					<token key="default.mysql.slave" value="${default.mysql.slave}" />
-				</replacetokens>
-			</filterchain>
-		</copy>
+        <copy file="build/tpl/mysql.ini" todir="etc" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="##" endtoken="##">
+                    <token key="default.mysql.logurl" value="${default.mysql.logurl}" />
+                    <token key="default.mysql.dbname" value="${default.mysql.dbname}" />
+                    <token key="default.mysql.prefix" value="${default.mysql.prefix}" />
+                    <token key="default.mysql.master" value="${default.mysql.master}" />
+                    <token key="default.mysql.slave" value="${default.mysql.slave}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
 
-		<exec command="php build/parse_object_list.php '127.0.0.1:10' ip" outputProperty="allow.iplist" />
-		<copy file="build/tpl/security_example.ini" tofile="etc/security.ini" overwrite="true" >
-			<filterchain>
-				<replacetokens begintoken="##" endtoken="##">
-					<token key="security.allow.iplist" value="${allow.iplist}" />
-				</replacetokens>
-			</filterchain>
-		</copy>
+        <exec command="php build/parse_object_list.php '127.0.0.1:10' ip" outputProperty="allow.iplist" />
+        <copy file="build/tpl/security_example.ini" tofile="etc/security.ini" overwrite="true" >
+            <filterchain>
+                <replacetokens begintoken="##" endtoken="##">
+                    <token key="security.allow.iplist" value="${allow.iplist}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
 
-		<copy file="build/tpl/alert.ini" todir="etc" overwrite="true">
-			<filterchain>
-				<replacetokens begintoken="##" endtoken="##">
-					<token key="run.mode" value="${run.mode}" />
-					<token key="alert.normal.command" value="${alert.normal.command}" />
-					<token key="alert.urgence.command" value="${alert.urgence.command}" />
-				</replacetokens>
-			</filterchain>
-		</copy>
+        <copy file="build/tpl/alert.ini" todir="etc" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="##" endtoken="##">
+                    <token key="run.mode" value="${run.mode}" />
+                    <token key="alert.normal.command" value="${alert.normal.command}" />
+                    <token key="alert.urgence.command" value="${alert.urgence.command}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
 
-	</target>
+    </target>
 
-	<target name="-bash" description="Build bash script.">
-		<exec command="php build/parse_array_list.php '${myfox.rpc.server}'" outputProperty="myfox.server.list" />
-		<copy file="resource/bash/gateway_call_myfox_import.sh" todir="bin" overwrite="true">
-			<filterchain>
-				<replacetokens begintoken="##" endtoken="##">
-					<token key="myfox.rpc.server.list" value="${myfox.server.list}" />
-					<token key="myfox.rpc.agent" value="${myfox.rpc.agent}" />
-					<token key="net.filename.prefix" value="${net.filename.prefix}" />
-				</replacetokens>
-			</filterchain>
-		</copy>
-	</target>
+    <target name="-bash" description="Build bash script.">
+        <exec command="php build/parse_array_list.php '${myfox.rpc.server}'" outputProperty="myfox.server.list" />
+        <copy file="resource/bash/gateway_call_myfox_import.sh" todir="bin" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="##" endtoken="##">
+                    <token key="myfox.rpc.server.list" value="${myfox.server.list}" />
+                    <token key="myfox.rpc.agent" value="${myfox.rpc.agent}" />
+                    <token key="net.filename.prefix" value="${net.filename.prefix}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
 
-	<target name="-unittest" description="Make configure files for unit test.">
-		<phingcall target="-cleanup-unittest" />
-		<copy file="build/tpl/myfox.ini" todir="test/unit/ini" overwrite="true">
-			<filterchain>
-				<replacetokens begintoken="##" endtoken="##">
-					<token key="run.mode" value="${run.mode}" />
-					<token key="run.timeout" value="1" />
-					<token key="url.prefix" value="${env.USER}/myfox2" />
-					<token key="log.url" value="log://debug.notice.warn.error/${env.HOME}/myfox_test.log?buffer=0" />
-					<token key="dir.root" value="${dir.root}/test/unit/ini" />
+        <copy file="resource/bash/myfoxctl.sh" todir="bin" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="##" endtoken="##">
+                    <token key="run.mode" value="${run.mode}" />
+                    <token key="run.user" value="" />
+                    <token key="php.cli.path" value="/usr/bin/php" />
+                </replacetokens>
+            </filterchain>
+        </copy>
+    </target>
 
-					<token key="myfox.download.path" value="${myfox.download.path}" />
-					<token key="myfox.filesplit.path" value="${myfox.filesplit.path}" />
-				</replacetokens>
-			</filterchain>
-		</copy>
+    <target name="-unittest" description="Make configure files for unit test.">
+        <phingcall target="-cleanup-unittest" />
+        <copy file="build/tpl/myfox.ini" todir="test/unit/ini" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="##" endtoken="##">
+                    <token key="run.mode" value="${run.mode}" />
+                    <token key="run.timeout" value="1" />
+                    <token key="url.prefix" value="${env.USER}/myfox2" />
+                    <token key="log.url" value="log://debug.notice.warn.error/${env.HOME}/myfox_test.log?buffer=0" />
+                    <token key="dir.root" value="${dir.root}/test/unit/ini" />
 
-		<copy file="build/tpl/mysql_test.ini" todir="test/unit/ini" overwrite="true">
-			<filterchain>
-				<replacetokens begintoken="##" endtoken="##">
-					<token key="mysql.log.url" value="log://debug.notice.warn.error/${env.HOME}/mysql_test.log?buffer=0" />
-				</replacetokens>
-			</filterchain>
-		</copy>
+                    <token key="myfox.download.path" value="${myfox.download.path}" />
+                    <token key="myfox.filesplit.path" value="${myfox.filesplit.path}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
 
-		<copy file="build/tpl/mysql.ini" todir="test/unit/ini" overwrite="true">
-			<filterchain>
-				<replacetokens begintoken="##" endtoken="##">
-					<token key="default.mysql.logurl" value="log://debug.notice.warn.error/${env.HOME}/mysql_test.log?buffer=0" />
-					<token key="default.mysql.prefix" value="test_" />
-					<token key="default.mysql.dbname" value="${default.mysql.dbname}" />
-					<token key="default.mysql.master" value="${default.mysql.master}" />
-					<token key="default.mysql.slave" value="${default.mysql.slave}" />
-				</replacetokens>
-			</filterchain>
-		</copy>
+        <copy file="build/tpl/mysql_test.ini" todir="test/unit/ini" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="##" endtoken="##">
+                    <token key="mysql.log.url" value="log://debug.notice.warn.error/${env.HOME}/mysql_test.log?buffer=0" />
+                </replacetokens>
+            </filterchain>
+        </copy>
 
-		<exec command="php build/parse_object_list.php '127.0.0.2:10,221.3.*:911' ip" outputProperty="allow.iplist" />
-		<copy file="build/tpl/security_example.ini" tofile="test/unit/ini/security.ini" overwrite="true" >
-			<filterchain>
-				<replacetokens begintoken="##" endtoken="##">
-					<token key="security.allow.iplist" value="${allow.iplist}" />
-				</replacetokens>
-			</filterchain>
-		</copy>
+        <copy file="build/tpl/mysql.ini" todir="test/unit/ini" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="##" endtoken="##">
+                    <token key="default.mysql.logurl" value="log://debug.notice.warn.error/${env.HOME}/mysql_test.log?buffer=0" />
+                    <token key="default.mysql.prefix" value="test_" />
+                    <token key="default.mysql.dbname" value="${default.mysql.dbname}" />
+                    <token key="default.mysql.master" value="${default.mysql.master}" />
+                    <token key="default.mysql.slave" value="${default.mysql.slave}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
 
-		<copy file="build/tpl/alert.ini" todir="test/unit/ini/" overwrite="true">
-			<filterchain>
-				<replacetokens begintoken="##" endtoken="##">
-					<token key="run.mode" value="${run.mode}" />
-					<token key="alert.normal.command" value="i_am_wrong_command" />
-					<token key="alert.urgence.command" value="" />
-				</replacetokens>
-			</filterchain>
-		</copy>
+        <exec command="php build/parse_object_list.php '127.0.0.2:10,221.3.*:911' ip" outputProperty="allow.iplist" />
+        <copy file="build/tpl/security_example.ini" tofile="test/unit/ini/security.ini" overwrite="true" >
+            <filterchain>
+                <replacetokens begintoken="##" endtoken="##">
+                    <token key="security.allow.iplist" value="${allow.iplist}" />
+                </replacetokens>
+            </filterchain>
+        </copy>
 
-	</target>
+        <copy file="build/tpl/alert.ini" todir="test/unit/ini/" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="##" endtoken="##">
+                    <token key="run.mode" value="${run.mode}" />
+                    <token key="alert.normal.command" value="i_am_wrong_command" />
+                    <token key="alert.urgence.command" value="" />
+                </replacetokens>
+            </filterchain>
+        </copy>
+
+    </target>
 </project>
