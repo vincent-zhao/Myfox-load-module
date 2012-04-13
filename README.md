@@ -29,17 +29,17 @@ $ nohup /usr/bin/php bin/run.php processor &
 
 ```bash
  .
- |-- READEME								自述文件
- |-- app									Myfox自身类代码
- |-- bin									后台运行脚本的启动命令
- |-- build									build文件，采用phing进行代码build
+ |-- READEME                                自述文件
+ |-- app                                    Myfox自身类代码
+ |-- bin                                    后台运行脚本的启动命令
+ |-- build                                  build文件，采用phing进行代码build
  |-- build.xml
- |-- etc									配置文件
- |-- lib									Myfox无关的PHP Class代码
- |-- release.properties					release模式的properties文件
- |-- resource								部署在Hadoop系统上的shell脚本模版
- |-- test									测试代码
- `-- www									htdocs目录, index.php作为统一入口程序
+ |-- etc                                    配置文件
+ |-- lib                                    Myfox无关的PHP Class代码
+ |-- release.properties                     release模式的properties文件
+ |-- resource                               部署在Hadoop系统上的shell脚本模版
+ |-- test                                   测试代码
+ `-- www                                    htdocs目录, index.php作为统一入口程序
 ```
 
 # 环境依赖 #
@@ -83,7 +83,14 @@ $ sh bin/gateway_call_myfox_import.sh -tmirror_v2 test/unit/resource/mirror_impo
 
 * 支持online alter table;
 
-* 根据unique key进行SQL语句优化;
+* 根据unique key进行SQL语句优化 [done];
 
-* 冷热数据分离.
+# Contributors #
+
+project: myfox
+commits: 47
+files  : 112
+authors: 
+    43  aleafs                  91.5%
+    4   Zhiqiang Zhao           8.5%
 
