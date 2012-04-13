@@ -50,7 +50,14 @@ class Checktable extends \Myfox\App\Worker
         $query  = sprintf('SELECT host_id AS id, host_name AS name FROM %shost_list', $mysql->option('prefix'));
         foreach ((array)$mysql->getAll($mysql->query($query)) AS $host) {
             $db = Server::instance($host['name'])->getlink();
-            foreach ((array)$db->getAll($db->query('SHOW DATABASES')) AS $dbname) {
+            try {
+                $databases  = $db->getAll($db->query('SHOW DATABASES'));
+            } catch (\Exception $e) {
+                $this->log->error('EXCEPTION', $e->getMessage());
+                continue;
+            }
+
+            foreach ((array)$databases AS $dbname) {
                 $dbname = reset($dbname);
                 if (preg_match('/^(mysql|test|information_schema)$/', $dbname) || !preg_match('/^\w+_\d+$/', $dbname)) {
                     continue;
