@@ -71,7 +71,7 @@ class Checktable extends \Myfox\App\Worker
                     );
                     $check  = sprintf('SELECT * FROM %s.%s LIMIT 1', $dbname, $tbname);
                     if ($db->query($check) /*|| false === stripos($db->lastError(), ' is marked as crashed')*/) {
-                        $this->log->notice('CHECK_IGNORE', $data);
+                        $this->log->debug('CHECK_IGNORE', $data);
                         continue;
                     }
 
