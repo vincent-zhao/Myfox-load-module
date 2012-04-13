@@ -27,36 +27,36 @@ fi
 checkuser
 # }}} #
 
-# {{{ function getpid() #
-function getpid() {
+# {{{ function daemonpid() #
+function daemonpid() {
 ps uxwwww | grep "run.php" | grep -w "${1}" | awk '{print $2}'
 }
 # }}} #
 
-# {{{ function start() #
-function start() {
-local pid=`getpid metasync`
+# {{{ function daemonstart() #
+function daemonstart() {
+local pid=`daemonpid ${1}`
 if [ -z "${pid}" ] ; then
-  echo "Start metasync process ... "
-  nohup ${CFG_PHP_CLI_PATH} ${__ROOT__}/bin/run.php metasync &
+  echo "Start ${1} process ... "
+  nohup ${CFG_PHP_CLI_PATH} ${__ROOT__}/bin/run.php ${1} &
   if [ ${?} -ne 0 ] ; then
     echo_failure
   else
     echo_success
   fi
 else
-  echo "metasync (pid: ${pid}) is running"
+  echo "${1} (pid: ${pid}) is running"
 fi
 }
 # }}} #
 
-# {{{ function stop() #
-function stop() {
-local pid=`getpid metasync`
+# {{{ function daemonstop() #
+function daemonstop() {
+local pid=`daemonpid ${1}`
 if [ -z "${pid}" ] ; then
-  echo "metasync is not running"
+  echo "${1} is not running"
 else
-  echo "Stop metasync process ..."
+  echo "Stop ${1} process ..."
   kill ${pid}
 
   for num in 1 1 2 3 ; do
@@ -64,13 +64,11 @@ else
       sleep ${num}
     fi
 
-    pid=`getpid metasync`
+    pid=`daemonpid ${1}`
     if [ -z "${pid}" ] ; then
       echo_success
       break
     fi
-
-    num=`expr num + 1`
     sleep 1
   done
 
@@ -79,6 +77,20 @@ else
     echo_success
   fi
 fi
+}
+# }}} #
+
+# {{{ function start() #
+function start() {
+daemonstart metasync
+daemonstart checktable
+}
+# }}} #
+
+# {{{ function stop() #
+function stop() {
+daemonstop checktable
+daemonstop metasync
 }
 # }}} #
 

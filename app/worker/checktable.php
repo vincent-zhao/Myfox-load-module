@@ -17,7 +17,7 @@ class Checktable extends \Myfox\App\Worker
 
     /* {{{ 成员变量 */
 
-    protected $option	= array(
+    protected $option   = array(
         'sleep' => 300000,      /**<    300s */
     );
 
