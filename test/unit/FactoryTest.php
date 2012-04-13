@@ -36,5 +36,21 @@ class FactoryTest extends \Myfox\Lib\TestShell
     }
     /* }}} */
 
+    /* {{{ public void test_should_factory_get_log_works_fine() */
+    public function test_should_factory_get_log_works_fine()
+    {
+        $log    = Factory::getLog('Iamnotexist');
+        $this->assertTrue($log instanceof \Myfox\Lib\Blackhole);
+
+        Factory::registerLog('unittest', sprintf(
+            'log://debug.notice.warning.error/%s/tmp/test.log?buffer=0',
+            __DIR__
+        ));
+
+        $log    = Factory::getLog('UnittEst ');
+        $this->assertTrue($log instanceof \Myfox\Lib\Log);
+    }
+    /* }}} */
+
 }
 

@@ -59,6 +59,7 @@ class Factory
     public static function removeAllObject($reg = false)
     {
         self::$objects  = array();
+        self::$logpool  = array();
     }
     /* }}} */
 

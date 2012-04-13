@@ -65,8 +65,13 @@ class Checktable extends \Myfox\App\Worker
 
                 foreach ((array)$db->getAll($db->query('SHOW TABLES FROM ' . $dbname)) AS $tbname) {
                     $tbname = reset($tbname);
+                    $data   = array(
+                        'host'  => $host['name'],
+                        'table' => sprintf('%s.%s', $dbname, $tbname),
+                    );
                     $check  = sprintf('SELECT * FROM %s.%s LIMIT 1', $dbname, $tbname);
-                    if ($db->query($check)) {// || false === stripos($db->lastError(), ' is marked as crashed')) {
+                    if ($db->query($check) /*|| false === stripos($db->lastError(), ' is marked as crashed')*/) {
+                        $this->log->notice('CHECK_IGNORE', $data);
                         continue;
                     }
 
@@ -77,14 +82,10 @@ class Checktable extends \Myfox\App\Worker
                         }
                     }
 
-                    $data   = array(
-                        'host'  => $host['name'],
-                        'table' => sprintf('%s.%s', $dbname, $tbname),
-                    );
                     if (!$db->query($check)) {
-                        $this->log->error('CHECKTABLE_FAIL', $data);
+                        $this->log->error('CHECK_FAIL', $data);
                     } else {
-                        $this->log->notice('CHECKTABLE', $data);
+                        $this->log->notice('CHECK_OK', $data);
                     }
                 }
             } 
