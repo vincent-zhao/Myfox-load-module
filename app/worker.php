@@ -17,6 +17,8 @@ class Worker
 
     protected $option	= array();
 
+    protected $log      = null;
+
     /* }}} */
 
     /* {{{ public void __construct() */
@@ -30,6 +32,7 @@ class Worker
     {
         $this->option	= (array)$option + $this->option;
         $this->cleanup();
+        $this->log  = \Myfox\Lib\Factory::getLog('daemon');
     }
     /* }}} */
 

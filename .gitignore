@@ -5,3 +5,4 @@ build/unit_test/
 etc/*.ini
 test/unit/ini/*.ini
 test/unit/tmp/
+resource/agent

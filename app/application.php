@@ -66,6 +66,13 @@ class Application
         }
 
         /**
+         * @日志对象
+         */
+        foreach ((array)$config->get('log') AS $name => $url) {
+            \Myfox\Lib\Factory::registerLog($name, $url);
+        }
+
+        /**
          * @告警提醒
          */
         \Myfox\Lib\Alert::init(__DIR__ . '/../etc/alert.ini');

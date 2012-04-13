@@ -1,11 +1,11 @@
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4 foldmethod=marker: */
 // +------------------------------------------------------------------------+
-// | cleaner.php (清理系统中残余数据)		    							|
+// | cleaner.php (清理系统中残余数据)                                       |
 // +------------------------------------------------------------------------+
-// | Copygight (c) 2003 - 2011 Taobao.com. All Rights Reserved				|
+// | Copygight (c) 2003 - 2011 Taobao.com. All Rights Reserved              |
 // +------------------------------------------------------------------------+
-// | Author: pengchun <pengchun@taobao.com>									|
+// | Author: pengchun <pengchun@taobao.com>                                 |
 // +------------------------------------------------------------------------+
 
 namespace Myfox\App\Worker;

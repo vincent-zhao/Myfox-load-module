@@ -17,6 +17,8 @@ class Factory
 
     private static $objects = array();
 
+    private static $logpool = array();
+
     /* }}} */
 
     /* {{{ public static Object getObject() */
@@ -87,6 +89,34 @@ class Factory
     {
         $class = preg_replace('/\s+/', '', preg_replace('/[\/\\\]+/', '/', $class));
         return strtolower(trim($class, '/'));
+    }
+    /* }}} */
+
+    /* {{{ public static void registerLog() */
+    /**
+     * 注册log对象
+     */
+    public static function registerLog($name, $url)
+    {
+        self::$logpool[strtolower(trim($name))] = new \Myfox\Lib\Log($url);
+    }
+    /* }}} */
+
+    /* {{{ public static Object getLog() */
+    /**
+     * 根据名字获取日志对象
+     *
+     * @access public static
+     * @return Object
+     */
+    public static function getLog($name)
+    {
+        $name   = strtolower(trim($name));
+        if (isset(self::$logpool[$name])) {
+            return self::$logpool[$name];
+        }
+
+        return new \Myfox\Lib\BlackHole('Log:' . $name);
     }
     /* }}} */
 

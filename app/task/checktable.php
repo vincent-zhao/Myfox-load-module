@@ -45,7 +45,7 @@ class Checktable extends \Myfox\App\Task
                 // @see: http://dev.mysql.com/doc/refman/5.1/en/check-table.html
 
                 $ok = false;
-                foreach (array('FAST', 'MEDIUM', 'EXTENDED') AS $mode) {
+                foreach (array('FAST', 'MEDIUM', 'MEDIUM', 'MEDIUM', 'EXTENDED') AS $mode) {
                     if (self::success($mysql->getAll($mysql->query(sprintf('%s %s', $query, $mode))))) {
                         $ok = true;
                         break;

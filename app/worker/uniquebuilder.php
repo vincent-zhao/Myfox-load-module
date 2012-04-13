@@ -14,8 +14,6 @@ class Uniquebuilder extends \Myfox\App\Worker
     /*{{{ variables*/
     private $mysql;
 
-    private $log;
-
     private $hosts = array();
 
     private $routetab = 'route_info';
@@ -39,8 +37,6 @@ class Uniquebuilder extends \Myfox\App\Worker
         parent::__construct($option);
 
         $this->mysql = \Myfox\Lib\Mysql::instance('default');
-
-        $this->log = new \Myfox\Lib\Log($this->mysql->option('logurl'));
 
         $hosts = $this->mysql->getAll($this->mysql->query(sprintf(
             'SELECT host_id,host_name FROM %shost_list',
