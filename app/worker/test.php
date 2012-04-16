@@ -19,6 +19,15 @@ class Test extends \Myfox\App\Worker
 
     /* }}} */
 
+    /* {{{ public void __construct() */
+    public function __construct($option)
+    {
+        parent::__construct((array)$option + array(
+            'locker'    => '',
+        ));
+    }
+    /* }}} */
+
     /* {{{ public Boolean execute() */
     /**
      * 执行函数
@@ -54,6 +63,19 @@ class Test extends \Myfox\App\Worker
      */
     public function cleanup()
     {
+    }
+    /* }}} */
+
+    /* {{{ public String locker() */
+    /**
+     * 进程锁名字
+     *
+     * @access public
+     * @return String
+     */
+    public function locker()
+    {
+        return $this->option['locker'];
     }
     /* }}} */
 

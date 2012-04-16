@@ -74,5 +74,18 @@ class Worker
     }
     /* }}} */
 
+    /* {{{ public String locker() */
+    /**
+     * 进程锁名字
+     *
+     * @access public
+     * @return String
+     */
+    public function locker()
+    {
+        return '';
+    }
+    /* }}} */
+
 }
 

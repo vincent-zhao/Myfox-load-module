@@ -23,6 +23,19 @@ class Checktable extends \Myfox\App\Worker
 
     /* }}} */
 
+    /* {{{ public String locker() */
+    /**
+     * 进程锁名字
+     *
+     * @access public
+     * @return String
+     */
+    public function locker()
+    {
+        return 'checktable';
+    }
+    /* }}} */
+
     /* {{{ public Integer interval() */
     /**
      * 下次运行sleep时间(ms)

@@ -1,9 +1,9 @@
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4 foldmethod=marker: */
 // +------------------------------------------------------------------------+
-// | 后台运行daemon类						    							|
+// | 后台运行daemon类                                                       |
 // +------------------------------------------------------------------------+
-// | Author: aleafs <pengchun@taobao.com>									|
+// | Author: aleafs <pengchun@taobao.com>                                   |
 // +------------------------------------------------------------------------+
 //
 // $Id: daemon.php 22 2010-04-15 16:28:45Z zhangxc83 $
@@ -16,9 +16,22 @@ class Daemon
 
     /* {{{ 静态变量 */
 
+    /**
+     * @信号映射表
+     */
     private static $signal  = array(
         SIGTERM     => 'SIGTERM',
     );
+
+    /**
+     * @进程身份号
+     */
+    private static $identy  = '';
+
+    /**
+     * @运行环境 (test|rc1|rc2|online|dev)
+     */
+    private static $runmode = '';
 
     /* }}} */
 
@@ -101,6 +114,28 @@ class Daemon
     }
     /* }}} */
 
+    /* {{{ private static void msleep() */
+    /**
+     * usleep 优化版
+     * 1. fix usleep bug, really ms, not us
+     * 2. sleep sharding
+     * @return void 
+     */
+    private static function msleep($ms)
+    {
+        $me = 200000;
+        $ms = $ms * 1000;
+        while ($ms >= $me) {
+            usleep($me);
+            $ms -= $me;
+        }
+
+        if ($ms > 0) {
+            usleep($ms);
+        }
+    }
+    /* }}} */
+
     /* {{{ public void sigaction() */
     /**
      * 信号处理
@@ -133,6 +168,10 @@ class Daemon
             printf("Class \"%s\" is not a subclass extended from \"Worker\".\n", $worker);
             exit;
         }
+
+        $config = new \Myfox\Lib\Config($ini);
+        self::$runmode  = strtolower(trim($config->get('run.mode', 'online')));
+        self::$identy   = sprintf('%d@%s', getmypid(), strtolower(trim(php_uname('n'))));
     }
     /* }}} */
 
@@ -157,11 +196,93 @@ class Daemon
         $this->isrun    = true;
         while ($this->isrun) {
             $check && pcntl_signal_dispatch();
+            if ($this->islocked($running)) {
+                self::msleep(5 * $this->worker->interval());
+                continue;
+            }
+
             $this->worker->cleanup();
             if ($this->isrun = $this->worker->execute()) {
-                usleep(1000 * max(1, $this->worker->interval()));
+                self::msleep($this->worker->interval());
             }
         }
+
+        $this->freelock();
+    }
+    /* }}} */
+
+    /* {{{ private Boolean islocked() */
+    /**
+     * 判断是否被锁定
+     *
+     * @access private
+     * @return Boolean true or false
+     */
+    private function islocked(&$value, $expire = 1800)
+    {
+        $name   = strtolower(trim($this->worker->locker()));
+        if (empty($name)) {
+            return false;
+        }
+
+        $mysql  = \Myfox\Lib\Mysql::instance('default');
+        $query  = sprintf(
+            "SELECT wholock, modtime FROM %sprocess_locker WHERE lockkey='%s' AND lockenv='%s' LIMIT 1",
+            $mysql->option('prefix'), $mysql->escape($name), $mysql->escape(self::$runmode)
+        );
+
+        $locker = $mysql->getRow($mysql->query($query));
+        if (empty($locker) || !isset($locker['wholock'])) {
+            $query  = sprintf(
+                'INSERT INTO %sprocess_locker (addtime, modtime, lockkey, lockenv, wholock)',
+                $mysql->option('prefix')
+            );
+            $query  = sprintf(
+                "%s VALUES (%d, %d, '%s', '%s', '%s')",
+                $query, time(), time(), $mysql->escape($name),
+                $mysql->escape(self::$runmode), $mysql->escape(self::$identy)
+            );
+
+            return $mysql->query($query) ? false : true;
+        }
+
+        if (!empty($locker['wholock']) && 0 !== strcasecmp(self::$identy, trim($locker['wholock'])) 
+            && (time() - (int)$locker['modtime']) <= $expire)
+        {
+            $value  = $locker['wholock'];
+            return true;
+        }
+
+        $query  = sprintf(
+            "UPDATE %sprocess_locker SET wholock='%s', modtime=%d WHERE lockkey='%s' AND lockenv='%s' AND wholock='%s'",
+            $mysql->option('prefix'), $mysql->escape(self::$identy), time(),
+            $mysql->escape($name), $mysql->escape(self::$runmode), $mysql->escape($locker['wholock'])
+        );
+
+        return $mysql->query($query) ? false : true;
+    }
+    /* }}} */
+
+    /* {{{ private void freelock() */
+    /**
+     * 释放锁
+     *
+     * @access private
+     * @return void
+     */
+    private function freelock()
+    {
+        $name   = strtolower(trim($this->worker->locker()));
+        if (empty($name)) {
+            return;
+        }
+
+        $mysql  = \Myfox\Lib\Mysql::instance('default');
+        return $mysql->query(sprintf(
+            "UPDATE %sprocess_locker SET wholock='' WHERE lockkey='%s' AND lockenv='%s' AND wholock='%s'",
+            $mysql->option('prefix'), $mysql->escape($name), $mysql->escape(self::$runmode),
+            $mysql->escape(self::$identy)
+        ));
     }
     /* }}} */
 

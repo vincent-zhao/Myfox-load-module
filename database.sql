@@ -189,3 +189,14 @@ CREATE TABLE dev_sql_format_stat_v2 (
 	FULLTEXT INDEX full_sql_table (ref_tables)
 ) ENGINE = MyISAM DEFAULT CHARSET=UTF8;
 
+DROP TABLE IF EXISTS dev_process_locker;
+CREATE TABLE IF NOT EXISTS dev_process_locker (
+    autokid int(10) unsigned not null auto_increment PRIMARY KEY,
+	addtime int(10) unsigned not null default 0,
+	modtime int(10) unsigned not null default 0,
+    lockkey varchar(32) not null default '',
+    lockenv varchar(16) not null default '',
+    wholock varchar(255) not null default '',
+    UNIQUE KEY uk_lock_name (lockkey, lockenv)
+) ENGINE = MyISAM DEFAULT CHARSET=UTF8;
+
