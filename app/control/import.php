@@ -42,7 +42,7 @@ class Import extends \Myfox\App\Controller
      */
     private static function priority()
     {
-        $secure = new Security(__DIR__ . '/../../etc/security.ini');
+        $secure = new Security(__DIR__ . '/../../etc/secure/import.ini');
         return $secure->priority(Context::userip());
     }
     /* }}} */

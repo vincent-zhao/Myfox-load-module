@@ -18,7 +18,8 @@ class Checktable extends \Myfox\App\Worker
     /* {{{ 成员变量 */
 
     protected $option   = array(
-        'sleep' => 300000,      /**<    300s */
+        'sleep' => 300000,      /**<    300s        */
+        'full'  => false,       /**<    full check  */
     );
 
     /* }}} */
@@ -60,6 +61,7 @@ class Checktable extends \Myfox\App\Worker
     {
         $mysql  = \Myfox\Lib\Mysql::instance('default');
 
+        $count  = 0;
         $query  = sprintf('SELECT host_id AS id, host_name AS name FROM %shost_list', $mysql->option('prefix'));
         foreach ((array)$mysql->getAll($mysql->query($query)) AS $host) {
             $db = Server::instance($host['name'])->getlink();
@@ -76,35 +78,69 @@ class Checktable extends \Myfox\App\Worker
                     continue;
                 }
 
-                foreach ((array)$db->getAll($db->query('SHOW TABLES FROM ' . $dbname)) AS $tbname) {
-                    $tbname = reset($tbname);
-                    $data   = array(
-                        'host'  => $host['name'],
-                        'table' => sprintf('%s.%s', $dbname, $tbname),
+                foreach ((array)$db->getAll($db->query('SHOW TABLE STATUS FROM ' . $dbname)) AS $row) {
+                    $table  = sprintf('%s.%s', $dbname, $row['Name']);
+                    $logvar = array(
+                        'server'    => $host['name'],
+                        'table'     => $table,
+                        'engine'    => $row['Engine'],
+                        'create'    => $row['Create_time'],
+                        'update'    => $row['Update_time'],
+                        'check'     => $row['Check_time'],
                     );
-                    $check  = sprintf('SELECT * FROM %s.%s LIMIT 1', $dbname, $tbname);
-                    if ($db->query($check) /*|| false === stripos($db->lastError(), ' is marked as crashed')*/) {
-                        $this->log->debug('CHECK_IGNORE', $data);
+
+                    if (true !== $this->option['full'] && $row['Check_time'] > $row['Update_time']) {
+                        $this->log->debug('CHECK_IGN1', $logvar);
                         continue;
                     }
 
-                    foreach (array('FAST', 'MEDIUM', 'MEDIUM', 'MEDIUM', 'EXTENDED') AS $mode) {
-                        $query  = sprintf('CHECK TABLE %s.%s %s', $dbname, $tbname, $mode);
-                        if (self::success($db->getAll($db->query($query)))) {
-                            break;
-                        }
+                    switch (self::realcheck($table, $db)) {
+                    case 0:
+                        $this->log->debug('CHECK_IGN2', $logvar);
+                        break;
+
+                    case 1:
+                        $this->log->notice('CHECK_OK', $logvar);
+                        break;
+
+                    default:
+                        $this->log->debug('CHECK_FAIL', $logvar);
+                        break;
                     }
 
-                    if (!$db->query($check)) {
-                        $this->log->error('CHECK_FAIL', $data);
-                    } else {
-                        $this->log->notice('CHECK_OK', $data);
+                    if (((++$count) % 10) == 0) {
+                        self::breakup();
                     }
                 }
             } 
         }
 
         return (bool)$loop;
+    }
+    /* }}} */
+
+    /* {{{ private static Integer realcheck() */
+    /**
+     * really check table
+     *
+     * @access private static
+     * @return Integer
+     */
+    private static function realcheck($table, $mysql)
+    {
+        $query  = sprintf('SELECT * FROM %s LIMIT 1', $table);
+        if ($mysql->query($query)/*|| false === stripos($mysql->lastError(), ' is marked as crashed')*/) {
+            return 0;
+        }
+
+        foreach (array('FAST', 'MEDIUM', 'MEDIUM', 'MEDIUM', 'EXTENDED') AS $mode) {
+            $check  = sprintf('CHECK TABLE %s %s', $table, $mode);
+            if (self::success($mysql->getAll($mysql->query($check)))) {
+                break;
+            }
+        }
+
+        return $mysql->query($query) ? 1 : -1;
     }
     /* }}} */
 

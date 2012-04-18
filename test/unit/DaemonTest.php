@@ -29,6 +29,37 @@ class DaemonTest extends \Myfox\Lib\TestShell
     }
     /* }}} */
 
+    /* {{{ public void test_should_daemon_sigaction_works_fine() */
+    public function test_should_daemon_sigaction_works_fine()
+    {
+        $daemon = Daemon::instance(self::$inifile, array(
+            'script',
+            'test',
+            '--sleep',
+            260,
+            '--loop',
+        ));
+
+        $proc   = proc_open(sprintf(
+            'sleep 1 && kill -%d %d',
+            SIGINT, getmypid()
+        ), array(), $pipes);
+
+        $daemon->sigaction(SIGINT, function() use ($daemon) {
+            echo "Got signal SIGINT\n";
+            $daemon->freelock();
+        });
+
+        $time1  = microtime(true);
+
+        ob_start();
+        $daemon->dispatch();
+        $this->assertEquals(true, 1000 * (microtime(true) - $time1 - 1) < 50);
+        $this->assertContains('Got signal SIGINT', ob_get_contents());
+        @ob_end_clean();
+    }
+    /* }}} */
+
     /* {{{ public void test_should_daemon_works_fine() */
     public function test_should_daemon_works_fine()
     {

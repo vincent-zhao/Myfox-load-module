@@ -62,7 +62,7 @@ class ControllerTest extends \Myfox\Lib\TestShell
         $controller = new \Myfox\App\Control\Import();
 
         \Myfox\App\Setting::set('last_date', '20121031');
-        
+
         ob_start();
         $controller->execute('index', array());
         $output = ob_get_contents();
@@ -194,5 +194,13 @@ class ControllerTest extends \Myfox\Lib\TestShell
         @ob_clean();
     }
     /* }}} */
+
+    /* {{{ public void test_should_agent_queque_works_fine() */
+    public function test_should_agent_queque_works_fine()
+    {
+        $me = new \Myfox\App\Control\Agent();
+    }
+    /* }}} */
+
 }
 

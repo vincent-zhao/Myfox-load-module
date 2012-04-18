@@ -8,7 +8,7 @@ export LANG=en_US.UTF-8
 declare -r MYFOX_RUN_MODE="##run.mode##"
 declare -r CFG_PHP_CLI_PATH="##php.cli.path##"
 
-declare -r __ROOT__="$(dirname -- $(dirname -- $(readlink -f -- ${BASH_SOURCE[0]})))"
+declare -r __ROOT__="$(dirname -- $(dirname -- $(readlink -f -- ${0})))"
 
 # {{{ function usage() #
 function usage() {

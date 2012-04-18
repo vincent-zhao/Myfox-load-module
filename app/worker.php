@@ -87,5 +87,20 @@ class Worker
     }
     /* }}} */
 
+    /* {{{ public static void breakup() */
+    /**
+     * 处理系统信号的断点
+     *
+     * @access public static
+     * @return void
+     */
+    public static function breakup()
+    {
+        if (function_exists('pcntl_signal_dispatch')) {
+            pcntl_signal_dispatch();
+        }
+    }
+    /* }}} */
+
 }
 

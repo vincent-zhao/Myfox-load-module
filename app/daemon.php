@@ -17,13 +17,6 @@ class Daemon
     /* {{{ 静态变量 */
 
     /**
-     * @信号映射表
-     */
-    private static $signal  = array(
-        SIGTERM     => 'SIGTERM',
-    );
-
-    /**
      * @进程身份号
      */
     private static $identy  = '';
@@ -41,7 +34,10 @@ class Daemon
 
     private $worker = null;
 
-    private $isrun  = false;
+    /**
+     * @信号回调
+     */
+    private $signal = array();
 
     /* }}} */
 
@@ -54,14 +50,27 @@ class Daemon
      */
     public static function run($ini, $args = null)
     {
+        $master = self::instance($ini, $args);
+        $master->dispatch();
+    }
+    /* }}} */
+
+    /* {{{ public static Object instance() */
+    /**
+     * 返回daemon实例
+     *
+     * @access public static
+     * @return Object
+     */
+    public static function instance($ini, $args = null)
+    {
         $run = array_shift($args);
         if (sizeof($args) < 1 || 0 === strcasecmp('help', reset($args))) {
             self::usage($run);
             exit(1);
         }
 
-        $master = new self($ini, array_shift($args), self::parse($args));
-        $master->dispatch();
+        return new self($ini, array_shift($args), self::parse($args));
     }
     /* }}} */
 
@@ -128,6 +137,9 @@ class Daemon
         while ($ms >= $me) {
             usleep($me);
             $ms -= $me;
+            if (function_exists('pcntl_signal_dispatch')) {
+                pcntl_signal_dispatch();
+            }
         }
 
         if ($ms > 0) {
@@ -138,15 +150,16 @@ class Daemon
 
     /* {{{ public void sigaction() */
     /**
-     * 信号处理
+     * 注册信号处理函数
      *
      * @access public
      * @return void
      */
-    public function sigaction($signal)
+    public function sigaction($signal, $callback)
     {
-        $this->isrun    = false;
-        printf("[%s]\tGot signal (%d), exiting...\n", date('Y-m-d H:i:s'), $signal);
+        if (is_callable($callback)) {
+            $this->signal[(int)$signal] = $callback;
+        }
     }
     /* }}} */
 
@@ -172,29 +185,38 @@ class Daemon
         $config = new \Myfox\Lib\Config($ini);
         self::$runmode  = strtolower(trim($config->get('run.mode', 'online')));
         self::$identy   = sprintf('%d@%s', getmypid(), strtolower(trim(php_uname('n'))));
+
+        $_clone = &$this;
+        $this->sigaction(SIGTERM, function ($signal) use ($_clone) {
+            printf("[%s]\tGot signal (%d)", date('Y-m-d H:i:s'), $signal);
+            if (SIGTERM == $signal) {
+                echo ", about to terminal ...\n";
+                $_clone->freelock();
+                exit(0);
+            }
+        });
     }
     /* }}} */
 
-    /* {{{ private void dispatch() */
+    /* {{{ public void dispatch() */
     /**
      * 任务分发
      *
-     * @access private
+     * @access public
      * @return void
      */
-    private function dispatch()
+    public function dispatch()
     {
         $check  = version_compare(phpversion(), '5.3.0', 'ge');
         if (empty($check)) {
             declare(ticks = 1);
         }
 
-        foreach (self::$signal AS $sig => $txt) {
-            pcntl_signal($sig, array(&$this, 'sigaction'));
+        foreach ($this->signal AS $signal => $callback) {
+            pcntl_signal($signal, $callback);
         }
 
-        $this->isrun    = true;
-        while ($this->isrun) {
+        while (1) {
             $check && pcntl_signal_dispatch();
             if ($this->islocked($running)) {
                 self::msleep(5 * $this->worker->interval());
@@ -202,12 +224,11 @@ class Daemon
             }
 
             $this->worker->cleanup();
-            if ($this->isrun = $this->worker->execute()) {
-                self::msleep($this->worker->interval());
+            if (!$this->worker->execute()) {
+                break;
             }
+            self::msleep($this->worker->interval());
         }
-
-        $this->freelock();
     }
     /* }}} */
 
@@ -263,14 +284,14 @@ class Daemon
     }
     /* }}} */
 
-    /* {{{ private void freelock() */
+    /* {{{ public void freelock() */
     /**
      * 释放锁
      *
-     * @access private
+     * @access public
      * @return void
      */
-    private function freelock()
+    public function freelock()
     {
         $name   = strtolower(trim($this->worker->locker()));
         if (empty($name)) {
