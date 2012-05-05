@@ -7,3 +7,4 @@ test/unit/ini/*.ini
 test/unit/tmp/
 resource/agent
 resource/bash/route_sync_diff.sh
+test/unit/resource/route.diff

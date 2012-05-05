@@ -78,7 +78,7 @@ class Import extends \Myfox\App\Task
                 return self::FAIL;
             }
 
-            $this->onehost($host, $fname);
+            $this->onehost($host, $fname, strtoupper($this->option('engine','MYISAM')));
         }
 
         return empty($this->pools) ? self::FAIL : self::WAIT;
@@ -98,9 +98,9 @@ class Import extends \Myfox\App\Task
         foreach ((array)$this->pools AS $host => $pool) {
             $failed = null;
             $mysql  = Server::instance($pool['server'])->getlink();
-            if (!empty($pool['handle']) && false !== $mysql->wait($pool['handle'])) {
+            if (false !== $pool['handle'] && false !== $mysql->wait($pool['handle'])) {
                 $failed = false;
-                foreach ((array)$pool['commmit'] AS $query) {
+                foreach ((array)$pool['commit'] AS $query) {
                     if (false === $mysql->query($query)) {
                         $failed = true;
                         $this->setError(sprintf('[%s] %s', $pool['server'], $mysql->lastError()));
@@ -144,19 +144,18 @@ class Import extends \Myfox\App\Task
      * @access private
      * @return Mixture
      */
-    private function onehost($host, $fname)
+    private function onehost($host, $fname, $engine = 'MYISAM')
     {
         self::metadata($flush);
         if (!isset(self::$hosts[$host])) {
             return;
         }
-
         $table  = Table::instance($this->option('table'));
         $mysql  = Server::instance(self::$hosts[$host]['name'])->getlink();
         $this->pools[$host] = array(
             'server'    => self::$hosts[$host]['name'],
             'handle'    => null,
-            'commmit'   => array(),
+            'commit'   => array(),
             'rollback'  => array(),
         );
 
@@ -164,32 +163,42 @@ class Import extends \Myfox\App\Task
         $querys = array(
             sprintf('CREATE DATABASE IF NOT EXISTS %s', $dbname),
             sprintf(
-                'CREATE TABLE IF NOT EXISTS %s (%s) ENGINE=MyISAM DEFAULT CHARSET=UTF8',
-                $this->option('bucket'), $table->sqlcreate()
+                'CREATE TABLE IF NOT EXISTS %s (%s) ENGINE=%s DEFAULT CHARSET=UTF8',
+                $this->option('bucket'),
+                ('BRIGHTHOUSE' == $engine) ? $table->sqlcreate('ib') : $table->sqlcreate(),
+                $engine
             ),
         );
+
         if ($this->option('replace', $table->get('load_type', 0))) {
             array_unshift($querys, sprintf('DROP TABLE IF EXISTS %s', $this->option('bucket')));
-            $this->pools[$host]['commmit']  = array();
+            $this->pools[$host]['commit']  = array();
             $this->pools[$host]['rollback'] = array(sprintf(
                 'DROP TABLE IF EXISTS %s', $this->option('bucket')
             ));
         } else {
-            $maxid  = (int)$mysql->getOne($mysql->query(sprintf(
-                'SELECT MAX(%s) FROM %s', $table->autokid(), $this->option('bucket')
-            )));
-            if ($maxid) {
-                $this->pools[$host]['rollback'] = array(sprintf(
-                    'DELETE FROM %s WHERE %s > %u', $this->option('bucket'),
-                    $table->autokid(), $maxid
-                ));
-            } else {
-                $this->pools[$host]['rollback'] = array(
-                    'DROP TABLE IF EXISTS %s', $this->option('bucket')
-                );
+            if('MYISAM' == $engine) {
+                $maxid  = (int)$mysql->getOne($mysql->query(sprintf(
+                    'SELECT MAX(%s) FROM %s', $table->autokid(), $this->option('bucket')
+                )));
+                if ($maxid) {
+                    $this->pools[$host]['rollback'] = array(sprintf(
+                        'DELETE FROM %s WHERE %s > %u', $this->option('bucket'),
+                        $table->autokid(), $maxid
+                    ));
+                } else {
+                    $this->pools[$host]['rollback'] = array(
+                        'DROP TABLE IF EXISTS %s', $this->option('bucket')
+                    );
+                }
+            }else {
+                $this->pools[$host]['commit'] = array('COMMIT');
+                $this->pools[$host]['rollback'] = array('ROLLBACK');
             }
         }
-
+        if('BRIGHTHOUSE' == $engine) {
+            array_push($querys, 'Set AUTOCOMMIT=0');
+        }
         foreach ($querys AS $sql) {
             if (false === $mysql->query($sql)) {
                 $this->setError($mysql->lastError());

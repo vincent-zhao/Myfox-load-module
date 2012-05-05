@@ -1,11 +1,11 @@
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4 foldmethod=marker: */
 // +------------------------------------------------------------------------+
-// | monitor.php (集群状态监控) 			    							|
+// | monitor.php (集群状态监控)                                             |
 // +------------------------------------------------------------------------+
-// | Copygight (c) 2003 - 2011 Taobao.com. All Rights Reserved				|
+// | Copygight (c) 2003 - 2011 Taobao.com. All Rights Reserved              |
 // +------------------------------------------------------------------------+
-// | Author: pengchun <pengchun@taobao.com>									|
+// | Author: pengchun <pengchun@taobao.com>                                 |
 // +------------------------------------------------------------------------+
 
 namespace Myfox\App\Worker;
@@ -29,7 +29,7 @@ class Monitor extends \Myfox\App\Worker
 
     /* {{{ 成员变量 */
 
-    protected $option	= array(
+    protected $option   = array(
         'sleep'     => 300000,
     );
 
@@ -183,31 +183,31 @@ class Monitor extends \Myfox\App\Worker
                 $table, \Myfox\App\Queque::FLAG_WAIT, date('Y-m-d H:i:s', time() - 300)
             ))),
         );
-}
-/* }}} */
-
-/* {{{ private static Mixture hostname() */
-/**
- * 根据ID获取机器名字
- *
- * @access private static
- * @return Mixture
- */
-private static function hostname($id)
-{
-    if (time() - self::$last_ts >= 300) {
-        $mysql  = \Myfox\Lib\Mysql::instance('default');
-        $query  = sprintf('SELECT host_id, host_name FROM %shost_list', $mysql->option('prefix'));
-
-        self::$hostmap  = array();
-        foreach ($mysql->getAll($mysql->query($query)) AS $row) {
-            self::$hostmap[(int)$row['host_id']] = trim($row['host_name']);
-        }
     }
+    /* }}} */
 
-    return isset(self::$hostmap[$id]) ? self::$hostmap[$id] : null;
-}
-/* }}} */
+    /* {{{ private static Mixture hostname() */
+    /**
+     * 根据ID获取机器名字
+     *
+     * @access private static
+     * @return Mixture
+     */
+    private static function hostname($id)
+    {
+        if (time() - self::$last_ts >= 300) {
+            $mysql  = \Myfox\Lib\Mysql::instance('default');
+            $query  = sprintf('SELECT host_id, host_name FROM %shost_list', $mysql->option('prefix'));
+
+            self::$hostmap  = array();
+            foreach ($mysql->getAll($mysql->query($query)) AS $row) {
+                self::$hostmap[(int)$row['host_id']] = trim($row['host_name']);
+            }
+        }
+
+        return isset(self::$hostmap[$id]) ? self::$hostmap[$id] : null;
+    }
+    /* }}} */
 
 }
 

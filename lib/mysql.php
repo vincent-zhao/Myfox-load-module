@@ -390,7 +390,7 @@ class Mysql
     public function getRow($rs)
     {
         $rt = (array)$this->getAll($rs, 1);
-        return reset($rt);
+        return $rt ? reset($rt) : null;
     }
     /* }}} */
 

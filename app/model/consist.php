@@ -70,6 +70,7 @@ class Consist
             $pools[$name]   = Server::instance($name)->getlink()->async($query);
         }
 
+        $result = array();
         foreach ($pools AS $name => $id) {
             $db = Server::instance($name)->getlink();
             foreach ((array)$db->getAll($db->wait($id)) AS $row) {

@@ -27,7 +27,7 @@ class ChecktableTest extends \Myfox\Lib\TestShell
             'sleep' => 11,
         ));
         $this->assertEquals(11, $worker->interval());
-        $this->assertEquals(true, $worker->execute());
+        $this->assertEquals(false, $worker->execute());
     }
     /* }}} */
 

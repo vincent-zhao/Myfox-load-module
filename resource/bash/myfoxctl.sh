@@ -83,13 +83,11 @@ fi
 # {{{ function start() #
 function start() {
 daemonstart metasync
-daemonstart checktable
 }
 # }}} #
 
 # {{{ function stop() #
 function stop() {
-daemonstop checktable
 daemonstop metasync
 }
 # }}} #

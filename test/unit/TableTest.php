@@ -141,6 +141,12 @@ class TableTest extends \Myfox\Lib\TestShell
             Table::instance('mirror_v2')->sqlcreate()
         );
 
+        $this->assertEquals(
+            "cid int(10) not null default '0',\n".
+            "cname varchar(255) not null default ''",
+            Table::instance('mirror_v2')->sqlcreate('ib')
+        );
+
         $create = array(
             "thedate date not null default '0000-00-00'",
             "cid int(10) unsigned not null default '0'",
@@ -153,6 +159,18 @@ class TableTest extends \Myfox\Lib\TestShell
         $this->assertEquals(
             implode(",\n", $create),
             Table::instance('numsplit_v2')->sqlcreate()
+        );
+
+        $createib = array(
+            "thedate date not null default '0000-00-00'",
+            "cid int(10) not null default '0'",
+            "num1 int(10) not null default '0'",
+            "num2 decimal(20,14) not null default '0.00'",
+            "char1 varchar(32) not null default ''",
+        );
+        $this->assertEquals(
+            implode(",\n", $createib),
+            Table::instance('numsplit_v2')->sqlcreate('ib')
         );
     }
     /* }}} */

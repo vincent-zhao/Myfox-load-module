@@ -58,7 +58,7 @@ class RouterTest extends \Myfox\Lib\TestShell
                     ''  => array(
                         array(
                             'rows'  => 1300,
-                            'hosts' => '1,3,2',
+                            'hosts' => '4,5,1,3,2',
                             'table' => 'mirror_v2_0.t_' . $mirror->get('autokid') . '_' . $id,
                         ),
                     ),

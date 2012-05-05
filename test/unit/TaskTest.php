@@ -171,6 +171,7 @@ class TaskTest extends \Myfox\Lib\TestShell
         ), '1,1,999999,-98');
         $this->assertEquals(Task::WAIT, $task->execute());
         $this->assertEquals(Task::SUCC, $task->wait());
+        //var_dump($task->lastError());
         $this->assertEquals('3', $task->result());
     }
     /* }}} */
@@ -192,6 +193,98 @@ class TaskTest extends \Myfox\Lib\TestShell
         ), '999999,-98');
         $this->assertEquals(Task::WAIT, $task->execute());
         $this->assertEquals(Task::SUCC, $task->wait());
+        //$task->execute();
+        //$task->wait();
+        //echo $task->lastError();
+        $where  = \Myfox\App\Model\Router::instance('mirror_v2')->where(null);
+        $route  = self::$mysql->getOne(self::$mysql->query(sprintf(
+            "SELECT hosts_list FROM %s WHERE table_name='mirror_v2' AND real_table='%s' AND route_flag = %d",
+            $where['table'], $route['table'], \Myfox\App\Model\Router::FLAG_IMPORT_END
+        )));
+
+        $route  = array_filter(explode(',', trim($route, '{}$')));
+        sort($route);
+        $this->assertEquals(array(1,2,3,4,5), $route);
+    }
+    /* }}} */
+
+    /* {{{ public void test_should_import_numsplit_to_ib_works_fine() */
+    public function test_should_import_numsplit_to_ib_works_fine()
+    {
+        $task   = new \Myfox\App\Task\Import(-1, array('table' => 'numsplit_v2'));
+        $this->assertEquals(Task::IGNO, $task->execute());
+
+        self::cleanTable('default', 'route_info');
+        \Myfox\App\Model\Router::set('numsplit_v2', array(
+            array(
+                'field' => array(
+                    'thedate'   => '2011-06-10',
+                    'cid'       => 1,
+                ),
+                'count' => 1201,
+            ),
+            array(
+                'field' => array(
+                    'thedate'   => '2011-06-10',
+                    'cid'       => 2,
+                ),
+                'count' => 998,
+            ),
+        ));
+
+        $task   = new \Myfox\App\Task\Import(10, array(
+            'table'     => 'numsplit_v2',
+            'route'     => 'cid=1,thedate=20110610',
+            'file'      => realpath(__DIR__ . '/resource/numsplit_import_data_file.txt'),
+            'bucket'    => 'numsplit_0.t_2_0',
+            'hosts'     => '4,5',
+            'engine'    => 'BRIGHTHOUSE',
+        ), '1,1,999999,-98');
+        $this->drop_test_table('ibtest_1', 'numsplit_0.t_2_0');
+        $this->drop_test_table('ibtest_2', 'numsplit_0.t_2_0');
+        $this->assertEquals(Task::WAIT, $task->execute());
+        $this->assertEquals(Task::SUCC, $task->wait());
+        $this->assertEquals('4,5', $task->result());
+
+        $ib1 = \Myfox\App\Model\Server::instance('ibtest_1')->getlink();
+        $ib2 = \Myfox\App\Model\Server::instance('ibtest_2')->getlink();
+        $this->assertContains(
+            'BRIGHTHOUSE',
+            json_encode($ib1->getAll( $ib1->query('SHOW CREATE TABLE numsplit_0.t_2_0')))
+        );
+        $this->assertContains(
+            'BRIGHTHOUSE',
+            json_encode($ib2->getAll( $ib1->query('SHOW CREATE TABLE numsplit_0.t_2_0')))
+        );
+        $this->assertEquals(
+            10,
+            $ib1->getOne($ib1->query('SELECT COUNT(*) FROM numsplit_0.t_2_0'))
+        );
+        $this->assertEquals(
+            10,
+            $ib2->getOne($ib2->query('SELECT COUNT(*) FROM numsplit_0.t_2_0'))
+        );
+    }
+    /* }}} */
+
+    /* {{{ public void test_should_import_mirror_to_ib_works_fine() */
+    public function test_should_import_mirror_to_ib_works_fine()
+    {
+        self::cleanTable('default', 'route_info');
+        $route  = \Myfox\App\Model\Router::set('mirror_v2', array());
+        $route  = reset($route);
+        $route  = reset($route);
+
+        $task   = new \Myfox\App\Task\Import(10, array(
+            'table'     => 'mirror_v2',
+            'route'     => '',
+            'file'      => realpath(__DIR__ . '/resource/mirror_import_data_file.txt'),
+            'bucket'    => $route['table'],
+            'hosts'     => '4,5',
+            'engine'    => 'BRIGHTHOUSE',
+        ), '999999,-98');
+        $this->assertEquals(Task::WAIT, $task->execute());
+        $this->assertEquals(Task::SUCC, $task->wait());
 
         $where  = \Myfox\App\Model\Router::instance('mirror_v2')->where(null);
         $route  = self::$mysql->getOne(self::$mysql->query(sprintf(
@@ -201,7 +294,13 @@ class TaskTest extends \Myfox\Lib\TestShell
 
         $route  = array_filter(explode(',', trim($route, '{}$')));
         sort($route);
-        $this->assertEquals(array(1,2,3), $route);
+        $this->assertEquals(array(4,5), $route);
+        $this->assertEquals(true, self::check_table_exists('ibtest_1', 'mirror_v2_0.t_1_0'));
+        $this->assertEquals(true, self::check_table_exists('ibtest_1', 'mirror_v2_0.t_1_1'));
+        $this->assertEquals(true, self::check_table_exists('ibtest_1', 'mirror_v2_0.t_1_2'));
+        $this->assertEquals(true, self::check_table_exists('ibtest_2', 'mirror_v2_0.t_1_0'));
+        $this->assertEquals(true, self::check_table_exists('ibtest_2', 'mirror_v2_0.t_1_1'));
+        $this->assertEquals(true, self::check_table_exists('ibtest_2', 'mirror_v2_0.t_1_2'));
     }
     /* }}} */
 

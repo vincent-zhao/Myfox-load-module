@@ -89,7 +89,7 @@ class Checktable extends \Myfox\App\Worker
                         'check'     => $row['Check_time'],
                     );
 
-                    if (true !== $this->option['full'] && $row['Check_time'] > $row['Update_time']) {
+                    if (true !== $this->option['full'] && $row['Check_time'] > $row['Update_time'] && !empty($row['Engine'])) {
                         $this->log->debug('CHECK_IGN1', $logvar);
                         continue;
                     }
@@ -115,7 +115,7 @@ class Checktable extends \Myfox\App\Worker
             } 
         }
 
-        return (bool)$loop;
+        return false;
     }
     /* }}} */
 
@@ -161,12 +161,12 @@ class Checktable extends \Myfox\App\Worker
             if (!isset($row['Msg_type']) || !isset($row['Msg_text'])) {
                 continue;
             }
-            if ('status' == $row['Msg_type'] && 0 != strcasecmp('OK', $row['Msg_text'])) {
-                return false;
+            if ('status' == $row['Msg_type'] && 0 == strcasecmp('OK', $row['Msg_text'])) {
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
     /* }}} */
 

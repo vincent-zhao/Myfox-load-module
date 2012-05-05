@@ -24,29 +24,45 @@ class Table
         'autokid'   => array(
             'mysql' => 'int($$LEN$$) unsigned not null auto_increment primary key',
         ),
+        'long'      => array(
+            'mysql' => 'bigint($$LEN$$)',
+            'ib'    => 'bigint($$LEN$$)',
+        ),
+        'ulong'     => array(
+            'mysql' => 'bigint($$LEN$$) unsigned',
+            'ib'    => 'bigint($$LEN$$)',
+        ),
         'int'       => array(
             'mysql' => 'int($$LEN$$)',
+            'ib'    => 'int($$LEN$$)',
         ),
         'uint'      => array(
             'mysql' => 'int($$LEN$$) unsigned',
+            'ib'    => 'int($$LEN$$)',
         ),
         'float'     => array(
             'mysql' => 'decimal($$LEN$$)',
+            'ib'    => 'decimal($$LEN$$)',
         ),
         'ufloat'    => array(
             'mysql' => 'decimal($$LEN$$) unsigned',
+            'ib'    => 'decimal($$LEN$$)',
         ),
         'char'      => array(
             'mysql' => 'varchar($$LEN$$)',
+            'ib'    => 'varchar($$LEN$$)',
         ),
         'date'      => array(
             'mysql' => 'date',
+            'ib'    => 'date',
         ),
         'time'      => array(
             'mysql' => 'datetime',
+            'ib'    => 'datetime',
         ),
         'money'     => array(
             'mysql' => 'decimal($$LEN$$)',
+            'ib'    => 'decimal($$LEN$$)',
         ),
     );
 
