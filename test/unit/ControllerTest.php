@@ -61,14 +61,21 @@ class ControllerTest extends \Myfox\Lib\TestShell
     {
         $controller = new \Myfox\App\Control\Import();
 
-        \Myfox\App\Setting::set('last_date', '20121031');
+        \Myfox\App\Setting::set('myfox_last_date', '20121031');
 
         ob_start();
         $controller->execute('index', array());
         $output = ob_get_contents();
         $this->assertContains('[0] OK', $output);
         $this->assertContains('"last_date":"20121031"', $output);
+        @ob_clean();
 
+        $controller->execute('lastdate', array());
+        $output = ob_get_contents();
+        $this->assertEquals($output, json_encode(array(
+            'group_name'    => '__global__',
+            'last_date'     => '20121031',
+        )));
         @ob_clean();
     }
     /* }}} */
@@ -192,13 +199,6 @@ class ControllerTest extends \Myfox\Lib\TestShell
         $this->assertContains('[0] OK', $output);
 
         @ob_clean();
-    }
-    /* }}} */
-
-    /* {{{ public void test_should_agent_queque_works_fine() */
-    public function test_should_agent_queque_works_fine()
-    {
-        $me = new \Myfox\App\Control\Agent();
     }
     /* }}} */
 

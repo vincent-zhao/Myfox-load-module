@@ -77,8 +77,15 @@ class Import extends \Myfox\App\Task
                 $this->setError(Fileset::lastError());
                 return self::FAIL;
             }
+            $config = \Myfox\Lib\Config::instance('default');
+            $ibservers = array_unique(explode(',', trim($config->get('ib/servers'))));
+            $ibtables  = array_unique(explode(',', trim($config->get('ib/tables'))));
+            if (in_array($host, $ibservers) && in_array($this->option('table'), $ibtables)) {
+                $this->onehost($host, $fname, 'BRIGHTHOUSE');
+            } else {
+                $this->onehost($host, $fname, 'MYISAM');
+            }
 
-            $this->onehost($host, $fname, strtoupper($this->option('engine','MYISAM')));
         }
 
         return empty($this->pools) ? self::FAIL : self::WAIT;
@@ -98,6 +105,7 @@ class Import extends \Myfox\App\Task
         foreach ((array)$this->pools AS $host => $pool) {
             $failed = null;
             $mysql  = Server::instance($pool['server'])->getlink();
+            $this->setError($mysql->lastError());
             if (false !== $pool['handle'] && false !== $mysql->wait($pool['handle'])) {
                 $failed = false;
                 foreach ((array)$pool['commit'] AS $query) {

@@ -98,7 +98,7 @@ class Rsplit extends \Myfox\App\Task
 
                     $option = array(
                         'openrace'  => 0,
-                        'priority'  => (int)$this->option('priority'),
+                        'priority'  => (int)$this->option('priority') - 1,
                         'trytimes'  => 3,
                         'task_flag' => Queque::FLAG_WAIT,
                         'adduser'   => 'rsplit',

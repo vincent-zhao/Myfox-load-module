@@ -37,6 +37,9 @@ class Bucket
     public function __construct($cubage, $float = 0)
     {
         $this->cubage	= (int)abs($cubage);
+        if (empty($this->cubage)) {
+            $this->cubage   = 2000000;
+        }
         $this->maxcnt	= (int)((1 + abs($float)) * $this->cubage);
 
         $this->cargos   = array();

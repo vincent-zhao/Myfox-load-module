@@ -35,7 +35,6 @@ class TableTest extends \Myfox\Lib\TestShell
     {
         $table  = Table::instance('numsplit_v2');
         $this->assertEquals(0, $table->queries);
-
         $this->assertEquals(1000, $table->get('split_threshold'));
         $this->assertEquals(1, $table->queries);
 

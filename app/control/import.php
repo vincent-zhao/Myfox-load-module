@@ -57,8 +57,18 @@ class Import extends \Myfox\App\Controller
     protected function actionIndex($param, $post = null)
     {
         self::output(0, 'OK', json_encode(array(
-            'last_date' => \Myfox\App\Setting::get('last_date')
+            'last_date' => \Myfox\App\Setting::get('myfox_last_date')
         )));
+    }
+    /* }}} */
+
+    /* {{{ protected void actionLastdate() */
+    protected function actionLastdate($param)
+    {
+        echo json_encode(array(
+            'group_name'    => '__global__',
+            'last_date'     => \Myfox\App\Setting::get('myfox_last_date')
+        ));
     }
     /* }}} */
 

@@ -168,7 +168,7 @@ class Table
             $this->queries++;
         }
         $key	= strtolower(trim($key));
-        return isset($this->option[$key]) ? $this->option[$key] : $default;
+        return !empty($this->option[$key]) ? $this->option[$key] : $default;
     }
     /* }}} */
 

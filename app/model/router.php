@@ -457,10 +457,7 @@ class Router
         $skips  = max(1, (int)($counts / $backup));
         $last   = (int)Setting::get('last_assign_host');
         $bucket = array();
-
         $cursor = (int)Setting::get('table_route_count', $this->tbname);
-        $dbnums = (int)Setting::get('table_real_count', $this->tbname);
-
         foreach ($chunks AS $items) {
             $ns = array();
             for ($i = 0; $i < $backup; $i++) {
@@ -469,9 +466,9 @@ class Router
 
             $ns = implode(',', $ns);
             $tb = sprintf(
-                '%s_%d.t_%d_%d', $this->tbname, $dbnums % self::TABLES_PER_DB,
+                '%s_%d.t_%d_%d', $this->tbname, (int)($cursor / self::TABLES_PER_DB),
                 $this->table->get('autokid'),
-                (self::MIRROR === $this->table->get('route_type')) ? $cursor : $cursor % 3
+                (self::MIRROR != $this->table->get('route_type')) ? $cursor : $cursor % 3
             );
             foreach ($items AS $it) {
                 $bucket[$it['data']][]  = array(

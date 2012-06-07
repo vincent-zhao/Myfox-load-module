@@ -23,7 +23,7 @@ class RouterTest extends \Myfox\Lib\TestShell
             self::$mysql->option('prefix')
         ));
         self::$mysql->query(sprintf(
-            "DELETE FROM %ssettings WHERE cfgname IN ('table_route_count', 'table_real_count')",
+            "DELETE FROM %ssettings WHERE cfgname IN ('table_route_count')",
             self::$mysql->option('prefix')
         ));
 
@@ -72,7 +72,6 @@ class RouterTest extends \Myfox\Lib\TestShell
 
         $this->assertEquals(1, Setting::get('last_assign_host'));
         $this->assertEquals(4, Setting::get('table_route_count', 'mirror_v2'));
-        $this->assertEquals(0, (int)Setting::get('table_real_count', 'mirror_v2'));
 
         $where  = Router::instance('mirror_v2')->where(null);
         $route  = self::$mysql->getRow(self::$mysql->query(sprintf(

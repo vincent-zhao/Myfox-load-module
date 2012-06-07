@@ -64,5 +64,40 @@ class BucketTest extends \Myfox\Lib\TestShell
     }
     /* }}} */
 
+    /* {{{ public void test_should_zero_cubage_works_fine() */
+    /**
+     * XXX : THIS IS A BUG CASE
+     */
+    public function test_should_zero_cubage_works_fine()
+    {
+        $bucket	= new Bucket(0, 0.2);
+        $bucket->push('aa', 0);
+        $cargos = array(
+            array('id'    => 1, 'count' => 2410000),
+        );
+        foreach ($cargos AS $row) {
+            $bucket->push($row, $row['count']);
+        }
+
+        $this->assertEquals(
+            array(
+                array(
+                    array(
+                        'size'  => 2000000,
+                        'data'  => $cargos[0],
+                    ),
+                ),
+                array(
+                    array(
+                        'size'  => 410000,
+                        'data'  => $cargos[0],
+                    ),
+                ),
+            ),
+            $bucket->allot()
+        );
+    }
+    /* }}} */
+
 }
 
