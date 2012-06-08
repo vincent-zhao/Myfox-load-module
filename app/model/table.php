@@ -52,6 +52,10 @@ class Table
             'mysql' => 'varchar($$LEN$$)',
             'ib'    => 'varchar($$LEN$$)',
         ),
+        'text'      => array(
+            'mysql' => 'text',
+            'ib'    => 'text',
+        ),
         'date'      => array(
             'mysql' => 'date',
             'ib'    => 'date',
