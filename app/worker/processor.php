@@ -34,6 +34,7 @@ class Processor extends \Myfox\App\Worker
     protected $option = array(
         'p' => null,                /**<    worker标记 */
         'n' => 10,                  /**<    每次取多少条记录 */
+        't' => '',                  /**<    任务类型    */
     );
 
     private $tasks  = array();
@@ -79,7 +80,8 @@ class Processor extends \Myfox\App\Worker
     public function execute($loop = true)
     {
         $this->tasks    = (array)Queque::instance()->fetch(
-            $this->option['n'], $this->option['p']
+            $this->option['n'], $this->option['p'],
+            Queque::FLAG_WAIT, $this->option['t']
         );
 
         if (2 > $this->option['n']) {

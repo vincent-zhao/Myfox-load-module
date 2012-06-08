@@ -70,7 +70,7 @@ class Queque
      * @param  Integer $pos   : agent position
      * @return Mixture
      */
-    public function fetch($limit = 1, $pos = null, $type = self::FLAG_WAIT)
+    public function fetch($limit = 1, $pos = null, $flag = self::FLAG_WAIT, $type = '')
     {
         $query  = sprintf(
             'SELECT autokid AS `id`,task_type AS `type`,tmp_status AS `status`,task_info AS `info` FROM %stask_queque%s',
@@ -78,10 +78,14 @@ class Queque
         );
         $pos    = (0 > $pos) ? self::$mypos : (int)$pos;
         $where  = array(
-            sprintf('task_flag=%u', $type),
+            sprintf('task_flag=%u', $flag),
             'trytimes > 0',
             sprintf('((agentpos = %d AND openrace = 0) OR openrace = 1)', $pos),
         );
+        if ($type) {
+            $where[]    = sprintf("task_type='%s'", self::$mysql->escape(trim($type)));
+        }
+
         $order  = array(
             'priority ASC',
             'trytimes ASC',

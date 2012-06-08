@@ -107,5 +107,44 @@ class QuequeTest extends \Myfox\Lib\TestShell
     }
     /* }}} */
 
+    /* {{{ public void test_should_queque_fetch_by_type_works_fine() */
+    public function test_should_queque_fetch_by_type_works_fine()
+    {
+        $queque = Queque::instance();
+        $this->assertTrue($queque->insert(
+            'test ', array(
+                'src' => 'http://www.taobao.com',
+            ),
+            1,
+            array(
+                'trytimes'  => 2,
+                'adduser'   => 'unittest',
+                'priority'  => 201,
+            )
+        ));
+        $this->assertTrue($queque->insert(
+            'test2', array(
+                'src' => 'http://www.taobao.com',
+            ),
+            1,
+            array(
+                'trytimes'  => 2,
+                'adduser'   => 'unittest',
+                'priority'  => 200,
+            )
+        ));
+
+        $task   = $queque->fetch(1, 2, Queque::FLAG_WAIT, 'test');
+        $this->assertEquals(array(
+            'id'        => 1,
+            'type'      => 'test',
+            'status'    => '',
+            'info'      => json_encode(array(
+                'src' => 'http://www.taobao.com',
+            )),
+        ), $task);
+    }
+    /* }}} */
+
 }
 
