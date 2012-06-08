@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS dev_task_queque (
 	agentpos int(10) not null default 0,
 	openrace tinyint(1) unsigned not null default 1,
 	priority smallint(5) unsigned not null default 0,
-	trytimes smallint(5) unsigned not null default 0,
+	trytimes smallint(5) not null default 0,
 	addtime datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 	begtime datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
 	endtime datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
