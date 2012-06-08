@@ -160,7 +160,7 @@ class Processor extends \Myfox\App\Worker
     private static function unlock($id, $flag = Queque::FLAG_DONE, $option = null, $comma = null)
     {
         return Queque::instance()->update($id, array(
-            'trytimes'  => sprintf('IF(task_flag=%d,trytimes-1,trytimes)', Queque::FLAG_LOCK),
+            'trytimes'  => sprintf('IF(task_flag=%d && task_flag > 0,trytimes-1,trytimes)', Queque::FLAG_LOCK),
             'endtime'   => sprintf("IF(task_flag=%d,'%s',endtime)", Queque::FLAG_LOCK, date('Y-m-d H:i:s')),
             'task_flag' => $flag,
         ) + (array)$option, array(
