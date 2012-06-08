@@ -3,7 +3,7 @@
 // +------------------------------------------------------------------------+
 // | import.php (数据切分并导入集群)                                        |
 // +------------------------------------------------------------------------+
-// | Author: aleafs <pengchun@taobao.com>									|
+// | Author: aleafs <pengchun@taobao.com>                                   |
 // +------------------------------------------------------------------------+
 //
 // $Id: import.php 18 2010-04-13 15:40:37Z zhangxc83 $
@@ -185,7 +185,10 @@ class Import extends \Myfox\App\Task
                 'DROP TABLE IF EXISTS %s', $this->option('bucket')
             ));
         } else {
-            if('MYISAM' == $engine) {
+            if('BRIGHTHOUSE' == $engine) {
+                $this->pools[$host]['commit'] = array('COMMIT');
+                $this->pools[$host]['rollback'] = array('ROLLBACK');
+            } else {
                 $maxid  = (int)$mysql->getOne($mysql->query(sprintf(
                     'SELECT MAX(%s) FROM %s', $table->autokid(), $this->option('bucket')
                 )));
@@ -199,13 +202,10 @@ class Import extends \Myfox\App\Task
                         'DROP TABLE IF EXISTS %s', $this->option('bucket')
                     );
                 }
-            }else {
-                $this->pools[$host]['commit'] = array('COMMIT');
-                $this->pools[$host]['rollback'] = array('ROLLBACK');
             }
         }
         if('BRIGHTHOUSE' == $engine) {
-            array_push($querys, 'Set AUTOCOMMIT=0');
+            array_push($querys, 'SET AUTOCOMMIT=0');
         }
         foreach ($querys AS $sql) {
             if (false === $mysql->query($sql)) {
@@ -218,6 +218,10 @@ class Import extends \Myfox\App\Task
         if (empty($import)) {
             $import = self::IMPORTSQL;
         }
+        if('MYISAM' == $engine) {
+            $import = preg_replace('/\s+ENCLOSED\s+BY\s+("|\')?NULL("|\')?/i', ' ENCLOSED BY ""', $import);
+        }
+
         $this->pools[$host]['handle']   = $mysql->async(strtr($import, array(
             '{FILE}'    => $fname,
             '{TABLE}'   => $this->option('bucket'),

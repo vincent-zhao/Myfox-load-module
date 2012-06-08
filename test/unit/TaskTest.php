@@ -209,7 +209,7 @@ class TaskTest extends \Myfox\Lib\TestShell
     /* }}} */
 
     /* {{{ public void test_should_import_numsplit_to_ib_works_fine() */
-    public function _test_should_import_numsplit_to_ib_works_fine()
+    public function test_should_import_numsplit_to_ib_works_fine()
     {
         $task   = new \Myfox\App\Task\Import(-1, array('table' => 'numsplit_v2'));
         $this->assertEquals(Task::IGNO, $task->execute());

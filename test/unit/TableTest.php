@@ -86,7 +86,7 @@ class TableTest extends \Myfox\Lib\TestShell
             'num2'       => array(
                 'type'      => 'float',
                 'default'   => '0.00',
-                'sqlchar'   => 'num2 decimal(20,14) not null default 0.00',
+                'sqlchar'   => 'num2 decimal(18,4) not null default 0.00',
             ),
             'char1'       => array(
                 'type'      => 'char',
@@ -150,7 +150,7 @@ class TableTest extends \Myfox\Lib\TestShell
             "thedate date not null default '0000-00-00'",
             "cid int(10) unsigned not null default '0'",
             "num1 int(10) unsigned not null default '0'",
-            "num2 decimal(20,14) not null default '0.00'",
+            "num2 decimal(18,4) not null default '0.00'",
             "char1 varchar(32) not null default ''",
             "autokid int(10) unsigned not null auto_increment primary key",
             "KEY idx_cid (cid)",
@@ -164,7 +164,7 @@ class TableTest extends \Myfox\Lib\TestShell
             "thedate date not null default '0000-00-00'",
             "cid int(10) not null default '0'",
             "num1 int(10) not null default '0'",
-            "num2 decimal(20,14) not null default '0.00'",
+            "num2 decimal(18,4) not null default '0.00'",
             "char1 varchar(32) not null default ''",
         );
         $this->assertEquals(
