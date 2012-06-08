@@ -79,18 +79,15 @@ phing来管理。因此，对于配置文件的管理，我仍然建议你采用
 $ sh bin/gateway_call_myfox_import.sh -tnumsplit_v2 -rthedate=20110610,cid=1 test/unit/resource/numsplit_import_data_file.txt
 $ sh bin/gateway_call_myfox_import.sh -tmirror_v2 test/unit/resource/mirror_import_data_file.txt 1
 ```
-# TODO #
-
-* 支持online alter table;
-
-* 根据unique key进行SQL语句优化 [done];
 
 # Contributors #
 
-project: myfox
-commits: 47
-files  : 112
-authors: 
-    43  aleafs                  91.5%
-    4   Zhiqiang Zhao           8.5%
+```
+ project: Myfox-load-module
+ commits: 57
+ files  : 113
+ authors: 
+    53	aleafs                  93.0%
+     4	Zhiqiang Zhao           7.0%
+```
 
