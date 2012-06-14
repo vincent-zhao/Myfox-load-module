@@ -126,5 +126,15 @@ class MysqlTest extends \Myfox\Lib\TestShell
     }
     /* }}} */
 
+    /* {{{ public void test_should_mysql_reconnect_when_gone_away_works_fine() */
+    public function test_should_mysql_reconnect_when_gone_away_works_fine()
+    {
+        $mysql  = new Mysql(__DIR__ . '/ini/mysql.ini');
+        $result = $mysql->getAll($mysql->query('SHOW DATABASES'));
+        $this->assertEquals(0, $mysql->query(sprintf('KILL %d', $mysql->thread_id)));
+        $this->assertEquals($result, $mysql->getAll($mysql->query('SHOW DATABASES')));
+    }
+    /* }}} */
+
 }
 

@@ -20,7 +20,7 @@ class Mysql
 
     /* {{{ 静态常量 */
 
-    const NOMANIPULATE  = '/^(SELECT|SHOW|DESC|DESCRIBE)\s+/is';
+    const NOMANIPULATE  = '/^(SELECT|SHOW|DESC|DESCRIBE|KILL)\s+/is';
 
     /* }}} */
 
@@ -37,6 +37,8 @@ class Mysql
     /* }}} */
 
     /* {{{ 成员变量 */
+
+    public $thread_id   = null;
 
     private $master;
 
@@ -495,6 +497,7 @@ class Mysql
             $this->handle->close();
             $this->handle   = null;
         }
+        $this->thread_id    = null;
     }
     /* }}} */
 
@@ -570,6 +573,7 @@ class Mysql
                 $this->handle   = $is;
                 $this->handle->set_charset($this->option['charset']);
                 $this->handle->autocommit(true);
+                $this->thread_id    = $this->handle->thread_id;
             }
         }
     }
@@ -582,7 +586,7 @@ class Mysql
      * @access public
      * @return Mixture
      */
-    private function runsql($query, $async = false)
+    private function runsql($query, $async = false, $retry = true)
     {
         $query  = self::sqlclean($query);
         $modify = self::ismodify($query);
@@ -599,6 +603,15 @@ class Mysql
         }
 
         $rs = $this->handle->query($query, $async ? MYSQLI_ASYNC : null);
+
+        /**
+         * @ mysql server has gone away
+         */
+        if (2006 === $this->handle->errno && $retry) {
+            $this->disconnect();
+            return $this->runsql($query, $async, false);
+        }
+
         if ($rs && !($rs instanceof \mysqli_result)) {
             $rs = $this->handle->affected_rows;
         }
