@@ -22,7 +22,7 @@ class Import extends \Myfox\App\Task
 
     /* {{{ 静态常量 */
 
-    const IMPORTSQL = 'LOAD DATA LOCAL INFILE "{FILE}" INTO TABLE {TABLE} CHARACTER SET UTF8 FIELDS TERMINATED BY "	" ESCAPED BY ""';
+    const IMPORTSQL = 'LOAD DATA LOCAL INFILE "{FILE}" INTO TABLE {TABLE} CHARACTER SET UTF8 FIELDS TERMINATED BY "{TAB}" ESCAPED BY ""';
 
     /* }}} */
 
@@ -226,6 +226,7 @@ class Import extends \Myfox\App\Task
             '{FILE}'    => $fname,
             '{TABLE}'   => $this->option('bucket'),
             '{FS}'      => chr(1),
+            '{TAB}'     => chr(9),
         )));
     }
     /* }}} */
